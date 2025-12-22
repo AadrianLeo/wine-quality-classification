@@ -1,0 +1,31 @@
+{
+    "id": "8A459AAE",
+    "path": "C:/Users/pashi/OneDrive/Desktop/MS_BHT/3rd_Sem/Machine Learning 2/ML2_Wine_Project/code/wine.Rmd",
+    "project_path": "code/wine.Rmd",
+    "type": "r_markdown",
+    "hash": "792458307",
+    "contents": "",
+    "dirty": false,
+    "created": 1766427158021.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "62,46",
+        "scrollLine": "49",
+        "rmdVisualMode": "false",
+        "rmdVisualModeLocation": "507:0.800000011920929",
+        "rmdVisualWrapConfigured": "true",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": ""
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1766427136,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1766427136,
+    "read_only": false,
+    "read_only_alternatives": []
+}
