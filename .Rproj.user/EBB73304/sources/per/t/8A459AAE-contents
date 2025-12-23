@@ -1,0 +1,179 @@
+---
+title: "Wine Quality Analysis and Data Preparation"
+author: "Wine Project"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+## Run this once manually if the package is missing:
+## install.packages("here")
+
+library(here)
+```
+
+## 1. Introduction
+
+This report prepares and explores the red wine quality dataset. The goals are to:
+
+- Load the raw data from the project `data` folder.
+- Perform initial exploratory data analysis (EDA).
+- Engineer a binary target variable ("Poor" vs. "Premium" wines).
+- Save a cleaned version of the dataset for modeling.
+
+## 2. Load the Data
+
+```{r load-data}
+# Path to the dataset (red wine quality)
+data_path <- here("data", "winequality-red.csv")
+
+# Load the dataset (semicolon-separated file)
+wine <- read.csv2(data_path)
+
+dim(wine)
+str(wine)
+summary(wine)
+head(wine)
+```
+
+We first check for missing values and the distribution of the original quality scores.
+
+```{r missing-and-distribution}
+# Check missing values per column
+colSums(is.na(wine))
+
+# Distribution of original quality scores
+table(wine$quality)
+prop.table(table(wine$quality))
+```
+
+```{r hist-quality}
+hist(
+	wine$quality,
+	main = "Distribution of Wine Quality Scores",
+	xlab = "Quality",
+	col = "lightblue",
+	breaks = 10
+)
+```
+
+## 3. Data Exploration
+
+We ensure that key variables are treated as numeric and visually compare alcohol content across quality scores.
+
+```{r ensure-numeric}
+wine$quality <- as.numeric(as.character(wine$quality))
+wine$alcohol <- as.numeric(wine$alcohol)
+str(wine[, c("quality", "alcohol")])
+```
+
+```{r boxplot-alcohol-quality}
+boxplot(
+	alcohol ~ quality,
+	data = wine,
+	main = "Alcohol Content vs Wine Quality",
+	xlab = "Quality",
+	ylab = "Alcohol"
+)
+```
+
+For some analyses, it is useful to keep the original quality as a factor.
+
+```{r quality-factor}
+wine$quality_factor <- as.factor(wine$quality)
+str(wine$quality_factor)
+```
+
+## 4. Target Engineering and Cleaning
+
+We now create a binary classification target:
+
+- `Premium` (1): quality \(\geq 7\)
+- `Poor` (0): quality \(\leq 6\)
+
+```{r target-binary}
+wine$quality_binary <- ifelse(wine$quality >= 7, 1, 0)
+
+wine$quality_binary <- factor(
+	wine$quality_binary,
+	levels = c(0, 1),
+	labels = c("Poor", "Premium")
+)
+
+table(wine$quality_binary)
+prop.table(table(wine$quality_binary))
+```
+
+We remove the original numeric `quality` variable to avoid redundancy in the cleaned dataset.
+
+```{r create-clean}
+wine_clean <- wine
+wine_clean$quality <- NULL
+
+str(wine_clean)
+summary(wine_clean)
+```
+
+We also perform a few additional checks on missing values, duplicates, and outliers (via a simple boxplot for alcohol).
+
+```{r checks-clean}
+# Missing values in cleaned data
+colSums(is.na(wine_clean))
+
+# Number of duplicate rows
+sum(duplicated(wine_clean))
+
+# Boxplot for alcohol (outlier check)
+boxplot(
+	wine_clean$alcohol,
+	main = "Boxplot of Alcohol (Outlier Check)",
+	ylab = "Alcohol"
+)
+```
+
+```{r duplicates-details}
+duplicate_rows <- wine_clean[duplicated(wine_clean), ]
+nrow(duplicate_rows)
+head(duplicate_rows)
+```
+
+For reference, we compare basic summaries before and after cleaning.
+
+```{r compare-before-after}
+dim(wine)        # original
+dim(wine_clean)  # cleaned
+
+summary(wine)
+summary(wine_clean)
+
+table(wine$quality)
+table(wine_clean$quality_binary)
+prop.table(table(wine_clean$quality_binary))
+```
+
+## 5. Save Cleaned Dataset
+
+Finally, we save the cleaned red wine dataset into the `data` folder so it can be reused for modeling.
+
+```{r save-clean, eval=FALSE}
+dir.create(here("data"), showWarnings = FALSE)
+
+write.csv(
+	wine_clean,
+	here("data", "winequality-red-clean.csv"),
+	row.names = FALSE
+)
+```
+
+Setting `eval = FALSE` ensures that this chunk does not overwrite files automatically when knitting, but the code can be run interactively to write out the cleaned CSV if needed.
+
