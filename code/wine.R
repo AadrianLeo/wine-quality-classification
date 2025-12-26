@@ -11,7 +11,7 @@ library(here)
 ## Step 1 — Load the raw data
 
 # Path to the dataset (red wine quality)
-data_path <- here("D:/Project/ML2/winequality-red.csv")
+data_path <- here("/data/winequality-red.csv")
 
 # Load the dataset (semicolon-separated file)
 wine <- read.csv2(data_path)
