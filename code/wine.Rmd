@@ -84,6 +84,15 @@ prop.table(table(wine$quality_binary))
 wine_clean <- wine
 wine_clean$quality <- NULL
 
+numeric_cols <- c(
+  "fixed.acidity", "volatile.acidity", "citric.acid",
+  "residual.sugar", "chlorides",
+  "free.sulfur.dioxide", "total.sulfur.dioxide",
+  "density", "pH", "sulphates", "alcohol"
+)
+
+wine_clean[numeric_cols] <- lapply(wine_clean[numeric_cols], as.numeric)
+
 # 4. Final structure check
 str(wine_clean)
 summary(wine_clean)
@@ -148,7 +157,6 @@ head(wine_clean)
 #______EDA___________________
 
 summary(wine_clean)
-wine_clean$quality_binary <- as.factor(wine_clean$quality_binary)
 
 str(wine_clean)
 #All chemical predictor variables were converted from character to numeric to enable proper analysis and model training. 
@@ -191,7 +199,7 @@ library(corrplot)
 
 #Pairplot / Correlation plot
 library(corrplot)
-cor_mat <- cor(wine_clean[, sapply(wine_clean, is.numeric)])
+cor_mat <- cor(wine_clean[, numeric_cols])
 corrplot(cor_mat, method = "color", type = "upper")
 #__________________________
 
@@ -358,7 +366,11 @@ for(q in qualities) {
   legend("topleft", legend = paste("r =", round(r, 2)), bty = "n")
 }
 
-wine$quality_factor <- as.factor(wine$quality)
+<!-- wine$quality_factor <- as.factor(wine$quality) -->
 
 # Predictor variables will be standardized before training SVM, as SVM is sensitive to feature scaling
 # The dataset shows a strong class imbalance, therefore performance evaluation will rely on ROC-AUC and F1-score rather than accuracy alone.
+
+
+wine_model <- wine_clean
+wine_model$quality_factor <- NULL
