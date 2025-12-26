@@ -7,9 +7,9 @@
 install.packages("here")
 
 library(here)
-install.packages("ggplot2")
-install.packages("tidyverse")
-install.packages("dplyr")
+# install.packages("ggplot2")
+# install.packages("tidyverse")
+# install.packages("dplyr")
 library(dplyr)
 library(tidyverse)
 library(tidyr)
@@ -84,6 +84,14 @@ prop.table(table(wine$quality_binary))
 wine_clean <- wine
 wine_clean$quality <- NULL
 
+numeric_cols <- c(
+  "fixed.acidity", "volatile.acidity", "citric.acid",
+  "residual.sugar", "chlorides",
+  "free.sulfur.dioxide", "total.sulfur.dioxide",
+  "density", "pH", "sulphates", "alcohol"
+)
+
+wine_clean[numeric_cols] <- lapply(wine_clean[numeric_cols], as.numeric)
 # 4. Final structure check
 str(wine_clean)
 summary(wine_clean)
@@ -148,8 +156,7 @@ head(wine_clean)
 #______EDA___________________
 
 summary(wine_clean)
-wine_clean[sapply(wine_clean, is.character)] <-
-  lapply(wine_clean[sapply(wine_clean, is.character)], as.numeric)
+# wine_clean$quality_binary <- as.factor(wine_clean$quality_binary)
 
 str(wine_clean)
 #All chemical predictor variables were converted from character to numeric to enable proper analysis and model training. 
@@ -169,7 +176,7 @@ table(wine_clean$quality_binary)
 prop.table(table(wine_clean$quality_binary))
 
 library(ggplot2)
-ggplot(wine, aes(x = quality_binary)) +
+ggplot(wine_clean, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
   xlab("Quality") + ylab("Count")
@@ -191,8 +198,11 @@ library(dplyr)
 library(corrplot)
 
 #Pairplot / Correlation plot
-pairs(wine_clean[, sapply(wine_clean, is.numeric)], main = "Scatterplot Matrix of Numeric Variables")
 #__________________________
+library(corrplot)
+cor_mat <- cor(wine_clean[, numeric_cols])
+corrplot(cor_mat, method = "color", type = "upper")
+
 
 
 par(mfrow = c(2, 3)) 
@@ -357,9 +367,14 @@ for(q in qualities) {
   legend("topleft", legend = paste("r =", round(r, 2)), bty = "n")
 }
 
+# wine$quality_factor <- as.factor(wine$quality)
+
+# Predictor variables will be standardized before training SVM, as SVM is sensitive to feature scaling
+# The dataset shows a strong class imbalance, therefore performance evaluation will rely on ROC-AUC and F1-score rather than accuracy alone.
 
 
-
+wine_model <- wine_clean
+wine_model$quality_factor <- NULL
 
 
 

@@ -7,9 +7,9 @@
 install.packages("here")
 
 library(here)
-install.packages("ggplot2")
+<!-- install.packages("ggplot2")
 install.packages("tidyverse")
-install.packages("dplyr")
+install.packages("dplyr") -->
 library(dplyr)
 library(tidyverse)
 library(tidyr)
@@ -148,8 +148,7 @@ head(wine_clean)
 #______EDA___________________
 
 summary(wine_clean)
-wine_clean[sapply(wine_clean, is.character)] <-
-  lapply(wine_clean[sapply(wine_clean, is.character)], as.numeric)
+wine_clean$quality_binary <- as.factor(wine_clean$quality_binary)
 
 str(wine_clean)
 #All chemical predictor variables were converted from character to numeric to enable proper analysis and model training. 
@@ -169,7 +168,7 @@ table(wine_clean$quality_binary)
 prop.table(table(wine_clean$quality_binary))
 
 library(ggplot2)
-ggplot(wine, aes(x = quality_binary)) +
+ggplot(wine_clean, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
   xlab("Quality") + ylab("Count")
@@ -191,7 +190,9 @@ library(dplyr)
 library(corrplot)
 
 #Pairplot / Correlation plot
-pairs(wine_clean[, sapply(wine_clean, is.numeric)], main = "Scatterplot Matrix of Numeric Variables")
+library(corrplot)
+cor_mat <- cor(wine_clean[, sapply(wine_clean, is.numeric)])
+corrplot(cor_mat, method = "color", type = "upper")
 #__________________________
 
 
@@ -357,9 +358,7 @@ for(q in qualities) {
   legend("topleft", legend = paste("r =", round(r, 2)), bty = "n")
 }
 
+wine$quality_factor <- as.factor(wine$quality)
 
-
-
-
-
-
+# Predictor variables will be standardized before training SVM, as SVM is sensitive to feature scaling
+# The dataset shows a strong class imbalance, therefore performance evaluation will rely on ROC-AUC and F1-score rather than accuracy alone.
