@@ -11,7 +11,7 @@ library(here)
 ## Step 1 — Load the raw data
 
 # Path to the dataset (red wine quality)
-data_path <- here("/data/winequality-red.csv")
+data_path <- here("data/winequality-red.csv")
 
 # Load the dataset (semicolon-separated file)
 wine <- read.csv2(data_path)
@@ -326,7 +326,7 @@ ggplot(
 #_____________________
 
 # Get unique quality factors
-qualities <- sort(unique(df$quality_factor))
+qualities <- sort(unique(wine_clean$quality_factor))
 n <- length(qualities)
 
 # Set up plotting grid (e.g., 2 rows, 3 columns for 6 qualities)
@@ -335,7 +335,7 @@ par(mfrow = c(2, 3),      # adjust depending on number of qualities
 
 # Loop over each quality factor
 for(q in qualities) {
-  subset_df <- df[df$quality_factor == q, ]
+  subset_df <- wine_clean[wine_clean$quality_factor == q, ]
   
   # Scatter plot
   plot(subset_df$total.sulfur.dioxide, subset_df$free.sulfur.dioxide,
