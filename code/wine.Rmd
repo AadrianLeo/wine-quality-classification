@@ -7,6 +7,13 @@
 install.packages("here")
 
 library(here)
+install.packages("ggplot2")
+install.packages("tidyverse")
+install.packages("dplyr")
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(ggplot2)
 
 ## Step 1 — Load the raw data
 
