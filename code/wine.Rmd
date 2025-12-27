@@ -37,7 +37,7 @@ This report prepares and explores the red wine quality dataset. The goals are to
 # Path to the dataset (red wine quality)
 data_path <- here("data", "winequality-red.csv")
 
-# Load the dataset (semicolon-separated file)
+# Load the dataset
 wine <- read.csv2(data_path)
 
 dim(wine)
@@ -111,14 +111,13 @@ wine$quality_binary <- factor(
 )
 
 table(wine$quality_binary)
-prop.table(table(wine$quality_binary))
 ```
 
 We remove the original numeric `quality` variable to avoid redundancy in the cleaned dataset.
 
 ```{r create-clean}
+str(wine)
 wine_clean <- wine
-wine_clean$quality <- NULL
 
 str(wine_clean)
 summary(wine_clean)
@@ -127,11 +126,11 @@ summary(wine_clean)
 We also perform a few additional checks on missing values, duplicates, and outliers (via a simple boxplot for alcohol).
 
 ```{r checks-clean}
-# Missing values in cleaned data
-colSums(is.na(wine_clean))
 
 # Number of duplicate rows
-sum(duplicated(wine_clean))
+duplicate_rows <- wine_clean[duplicated(wine_clean), ]
+nrow(duplicate_rows)
+head(duplicate_rows)
 
 # Boxplot for alcohol (outlier check)
 boxplot(
@@ -141,31 +140,12 @@ boxplot(
 )
 ```
 
-```{r duplicates-details}
-duplicate_rows <- wine_clean[duplicated(wine_clean), ]
-nrow(duplicate_rows)
-head(duplicate_rows)
-```
-
-For reference, we compare basic summaries before and after cleaning.
-
-```{r compare-before-after}
-dim(wine)        # original
-dim(wine_clean)  # cleaned
-
-summary(wine)
-summary(wine_clean)
-
-table(wine$quality)
-table(wine_clean$quality_binary)
-prop.table(table(wine_clean$quality_binary))
-```
 
 ## 5. Save Cleaned Dataset
 
 Finally, we save the cleaned red wine dataset into the `data` folder so it can be reused for modeling.
 
-```{r save-clean, eval=FALSE}
+```{r save-cleaned}
 dir.create(here("data"), showWarnings = FALSE)
 
 write.csv(
@@ -173,7 +153,20 @@ write.csv(
 	here("data", "winequality-red-clean.csv"),
 	row.names = FALSE
 )
+
 ```
 
-Setting `eval = FALSE` ensures that this chunk does not overwrite files automatically when knitting, but the code can be run interactively to write out the cleaned CSV if needed.
+
+## 6. Checking Cleaned Dataset
+
+For reference, we compare basic summaries after cleaning.
+
+```{r check-columns}
+wine_clean_loaded <- read.csv(here("data", "winequality-red-clean.csv"))
+
+str(wine_clean_loaded)
+dim(wine_clean)  # cleaned
+summary(wine_clean)
+```
+
 
