@@ -36,7 +36,11 @@ This report prepares and explores the red wine quality dataset. The goals are to
 
 ```{r load-data}
 # Path to the dataset (red wine quality)
+<<<<<<< HEAD
 data_path <- here("Data/winequality-red.csv")
+=======
+data_path <- here("data/winequality-red.csv")
+>>>>>>> 273369d7421c24492c962f53d320d94e55078d8b
 # Load the dataset
 wine <- read.csv2(data_path)
 
