@@ -1,17 +1,28 @@
+---
+title: "Wine Quality Analysis and Data Preparation"
+author: "Wine Quality Project Group"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+---
 
-## Wine Quality Project - Data Preparation Script
-
-## Step 0 — Package setup
-
-## Run this line once manually if "here" is not installed:
-install.packages("here")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
 
 library(here)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(corrplot)
+```
 
-<<<<<<< Updated upstream
-## Step 1 — Load the raw data
-
-=======
 # Introduction
 
 This report prepares and explores the red wine quality dataset. The goals are to:
@@ -24,11 +35,9 @@ This report prepares and explores the red wine quality dataset. The goals are to
 # Load the Data
 
 ```{r load-data}
->>>>>>> Stashed changes
 # Path to the dataset (red wine quality)
-data_path <- here("D:/Project/ML2/winequality-red.csv")
-
-# Load the dataset (semicolon-separated file)
+data_path <- here("data/winequality-red.csv")
+# Load the dataset
 wine <- read.csv2(data_path)
 
 ## Basic structure and sanity checks
@@ -38,88 +47,96 @@ nrow(wine)
 ncol(wine)
 summary(wine)
 head(wine)
-
+```
+We first check for missing values and the distribution of the original quality scores.
+```{r missing-and-distribution}
 # Check missing values per column
 colSums(is.na(wine))
 
 # Distribution of original quality scores
 table(wine$quality)
 prop.table(table(wine$quality))
+```
 
+```{r hist-quality}
 hist(
-  wine$quality,
-  main = "Distribution of Wine Quality Scores",
-  xlab = "Quality",
-  col = "lightblue",
-  breaks = 10
+	wine$quality,
+	main = "Distribution of Wine Quality Scores",
+	xlab = "Quality",
+	col = "lightblue",
+	breaks = 10
 )
+```
 
-<<<<<<< Updated upstream
-# Ensure numeric types for key variables
-=======
 # Data Exploration
 
 We ensure that key variables are treated as numeric and visually compare alcohol content across quality scores.
 ```{r ensure-numeric}
->>>>>>> Stashed changes
 wine$quality <- as.numeric(as.character(wine$quality))
 wine$alcohol <- as.numeric(wine$alcohol)
+str(wine[, c("quality", "alcohol")])
+```
 
+```{r boxplot-alcohol-quality}
 boxplot(
-  alcohol ~ quality,
-  data = wine,
-  main = "Alcohol Content vs Wine Quality",
-  xlab = "Quality",
-  ylab = "Alcohol"
+	alcohol ~ quality,
+	data = wine,
+	main = "Alcohol Content vs Wine Quality",
+	xlab = "Quality",
+	ylab = "Alcohol"
 )
+```
 
-str(wine)
+
+For some analyses, it is useful to keep the original quality as a factor.
+
+```{r quality-factor}
 wine$quality_factor <- as.factor(wine$quality)
 str(wine)
+str(wine$quality_factor)
+```
 
-<<<<<<< Updated upstream
-## Step 2 — Data cleaning & target engineering
-=======
 # Target Engineering and Cleaning
 We now create a binary classification target:
->>>>>>> Stashed changes
 
-# 1. Create binary target variable
-#    Premium (1): quality >= 7
-#    Poor    (0): quality <= 6
+- `Premium` (1): quality \(\geq 7\)
+- `Poor` (0): quality \(\leq 6\)
+```{r target-binary}
 wine$quality_binary <- ifelse(wine$quality >= 7, 1, 0)
 
-# Convert target to factor (classification task)
 wine$quality_binary <- factor(
-  wine$quality_binary,
-  levels = c(0, 1),
-  labels = c("Poor", "Premium")
+	wine$quality_binary,
+	levels = c(0, 1),
+	labels = c("Poor", "Premium")
 )
 
-# 2. Check class distribution
 table(wine$quality_binary)
 prop.table(table(wine$quality_binary))
+```
 
-# 3. Remove original quality variable
+We remove the original numeric `quality` variable to avoid redundancy in the cleaned dataset.
+```{r checks-clean}
 wine_clean <- wine
 wine_clean$quality <- NULL
 
-# 4. Final structure check
+numeric_cols <- c(
+  "fixed.acidity", "volatile.acidity", "citric.acid",
+  "residual.sugar", "chlorides",
+  "free.sulfur.dioxide", "total.sulfur.dioxide",
+  "density", "pH", "sulphates", "alcohol"
+)
+
+wine_clean[numeric_cols] <- lapply(wine_clean[numeric_cols], as.numeric)
 str(wine_clean)
 summary(wine_clean)
 
-## Step 3 — Save cleaned dataset to a new CSV file
 
-<<<<<<< Updated upstream
-# Create data folder if it doesn't exist
-=======
 ```
 
 
 # Save Cleaned Dataset
 Finally, we save the cleaned red wine dataset into the `data` folder so it can be reused for modeling.
 ```{r save-cleaned}
->>>>>>> Stashed changes
 dir.create(here("data"), showWarnings = FALSE)
 
 # Save cleaned wine dataset
@@ -128,18 +145,13 @@ write.csv(
   here("data", "winequality-red-clean.csv"),
   row.names = FALSE
 )
-<<<<<<< Updated upstream
-=======
 ```
 # Checking Cleaned Dataset
->>>>>>> Stashed changes
 
-## Step 4 — Additional quality checks
-
-# Check missing values per column in cleaned data
+For reference, we compare basic summaries after cleaning.
+```{r check-cleaned}
 colSums(is.na(wine_clean))
 
-# Number of duplicate rows
 sum(duplicated(wine_clean))
 
 str(wine_clean)
@@ -150,7 +162,6 @@ boxplot(
   ylab = "Alcohol"
 )
 
-# Before vs after cleaning
 dim(wine)        # original
 
 dim(wine_clean)  # cleaned
@@ -158,58 +169,27 @@ dim(wine_clean)  # cleaned
 summary(wine)
 summary(wine_clean)
 
-# Original quality distribution
 table(wine$quality)
 
-# Binary target distribution
 table(wine_clean$quality_binary)
 prop.table(table(wine_clean$quality_binary))
 
-# View all duplicated rows (excluding first occurrence)
 duplicate_rows <- wine_clean[duplicated(wine_clean), ]
 nrow(duplicate_rows)
 head(duplicate_rows)
-
-# Row indices of duplicated rows
 which(duplicated(wine_clean))
 
 
 head(wine_clean)
+```
 
 
 
-
-<<<<<<< Updated upstream
-#______EDA___________________
-
-summary(wine_clean)
-wine_clean[sapply(wine_clean, is.character)] <-
-  lapply(wine_clean[sapply(wine_clean, is.character)], as.numeric)
-
-str(wine_clean)
-#All chemical predictor variables were converted from character to numeric to enable proper analysis and model training. 
-#The target variable quality_binary was converted to a factor with two levels, "Poor" and "Premium", for classification.
-#___________________________________
-
-#sum(duplicated(wine_clean))
-#wine_clean <- unique(wine_clean)
-
-#sum(duplicated(wine_clean)) 
-#nrow(wine_clean)   
-
-#checking and removing duplicate values.
-
-#___________________________________
-table(wine_clean$quality_binary)
-prop.table(table(wine_clean$quality_binary))
-
-=======
 # EDA
 ## Distribution of Wine Quality
 ```{r}
->>>>>>> Stashed changes
 library(ggplot2)
-ggplot(wine, aes(x = quality_binary)) +
+ggplot(wine_clean, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
   xlab("Quality") + ylab("Count")
@@ -224,15 +204,10 @@ The dataset shows a clear class imbalance, with the majority of observations bel
 library(corrplot)
 
 #Pairplot / Correlation plot
-<<<<<<< Updated upstream
-pairs(wine_clean[, sapply(wine_clean, is.numeric)], main = "Scatterplot Matrix of Numeric Variables")
-#__________________________
-=======
 library(corrplot)
 cor_mat <- cor(wine_clean[, numeric_cols])
 corrplot(cor_mat, method = "color", type = "upper")
 ```
->>>>>>> Stashed changes
 
 
 The correlation heatmap shows the pairwise relationships among numeric features in the wine dataset.
@@ -457,37 +432,8 @@ boxplot(alcohol ~ quality_factor,
 
 
 
-<<<<<<< Updated upstream
-# Get unique quality factors
-qualities <- sort(unique(df$quality_factor))
-n <- length(qualities)
-=======
->>>>>>> Stashed changes
 
 
-<<<<<<< Updated upstream
-# Loop over each quality factor
-for(q in qualities) {
-  subset_df <- df[df$quality_factor == q, ]
-  
-  # Scatter plot
-  plot(subset_df$total.sulfur.dioxide, subset_df$free.sulfur.dioxide,
-       main = paste("Quality", q),
-       xlab = "Total SO₂",
-       ylab = "Free SO₂",
-       pch = 19, col = "darkgreen",
-       cex = 0.7)
-  
-  # Calculate and add correlation
-  r <- cor(subset_df$free.sulfur.dioxide, subset_df$total.sulfur.dioxide)
-  legend("topleft", legend = paste("r =", round(r, 2)), bty = "n")
-}
-
-
-
-
-
-=======
 
 <!-- wine$quality_factor <- as.factor(wine$quality) -->
 
@@ -497,6 +443,5 @@ for(q in qualities) {
 wine_model <- wine_clean
 wine_model$quality_factor <- NULL
 ```
->>>>>>> Stashed changes
 
 

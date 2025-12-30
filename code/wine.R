@@ -5,13 +5,19 @@
 
 ## Run this line once manually if "here" is not installed:
 install.packages("here")
-
 library(here)
+# install.packages("ggplot2")
+# install.packages("tidyverse")
+# install.packages("dplyr")
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(ggplot2)
 
 ## Step 1 — Load the raw data
 
 # Path to the dataset (red wine quality)
-data_path <- here("D:/Project/ML2/winequality-red.csv")
+data_path <- here("data/winequality-red.csv")
 
 # Load the dataset (semicolon-separated file)
 wine <- read.csv2(data_path)
@@ -77,6 +83,14 @@ prop.table(table(wine$quality_binary))
 wine_clean <- wine
 wine_clean$quality <- NULL
 
+numeric_cols <- c(
+  "fixed.acidity", "volatile.acidity", "citric.acid",
+  "residual.sugar", "chlorides",
+  "free.sulfur.dioxide", "total.sulfur.dioxide",
+  "density", "pH", "sulphates", "alcohol"
+)
+
+wine_clean[numeric_cols] <- lapply(wine_clean[numeric_cols], as.numeric)
 # 4. Final structure check
 str(wine_clean)
 summary(wine_clean)
@@ -138,36 +152,11 @@ head(wine_clean)
 
 
 
-<<<<<<< Updated upstream
-#______EDA___________________
-
-summary(wine_clean)
-wine_clean[sapply(wine_clean, is.character)] <-
-  lapply(wine_clean[sapply(wine_clean, is.character)], as.numeric)
-
-str(wine_clean)
-#All chemical predictor variables were converted from character to numeric to enable proper analysis and model training. 
-#The target variable quality_binary was converted to a factor with two levels, "Poor" and "Premium", for classification.
-#___________________________________
-
-#sum(duplicated(wine_clean))
-#wine_clean <- unique(wine_clean)
-
-#sum(duplicated(wine_clean)) 
-#nrow(wine_clean)   
-
-#checking and removing duplicate values.
-
-#___________________________________
-table(wine_clean$quality_binary)
-prop.table(table(wine_clean$quality_binary))
-=======
 #EDA
->>>>>>> Stashed changes
 
 # 1. Disttibution of wine quality
 library(ggplot2)
-ggplot(wine, aes(x = quality_binary)) +
+ggplot(wine_clean, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
   xlab("Quality") + ylab("Count")
@@ -175,17 +164,11 @@ ggplot(wine, aes(x = quality_binary)) +
 
 library(corrplot)
 
-<<<<<<< Updated upstream
-#Pairplot / Correlation plot
-pairs(wine_clean[, sapply(wine_clean, is.numeric)], main = "Scatterplot Matrix of Numeric Variables")
-#__________________________
-=======
 # 2. Correlation plot
 library(corrplot)
 cor_mat <- cor(wine_clean[, numeric_cols])
 corrplot(cor_mat, method = "color", type = "upper")
 
->>>>>>> Stashed changes
 
 # 3.  Density vs Fixed Acidity
 par(mfrow = c(2, 3)) 
@@ -330,38 +313,6 @@ ggplot(
   )
 par(mfrow = c(1, 1)) 
 
-<<<<<<< Updated upstream
-#_____________________
-
-# Get unique quality factors
-qualities <- sort(unique(df$quality_factor))
-n <- length(qualities)
-
-# Set up plotting grid (e.g., 2 rows, 3 columns for 6 qualities)
-par(mfrow = c(2, 3),      # adjust depending on number of qualities
-    mar = c(4, 4, 2, 1))  # margins: bottom, left, top, right
-
-# Loop over each quality factor
-for(q in qualities) {
-  subset_df <- df[df$quality_factor == q, ]
-  
-  # Scatter plot
-  plot(subset_df$total.sulfur.dioxide, subset_df$free.sulfur.dioxide,
-       main = paste("Quality", q),
-       xlab = "Total SO₂",
-       ylab = "Free SO₂",
-       pch = 19, col = "darkgreen",
-       cex = 0.7)
-  
-  # Calculate and add correlation
-  r <- cor(subset_df$free.sulfur.dioxide, subset_df$total.sulfur.dioxide)
-  legend("topleft", legend = paste("r =", round(r, 2)), bty = "n")
-}
-
-
-
-
-=======
 
 # 8. Box plot of quality factor vs alcohol
 boxplot(alcohol ~ quality_factor,
@@ -373,7 +324,6 @@ boxplot(alcohol ~ quality_factor,
 
 wine_model <- wine_clean
 wine_model$quality_factor <- NULL
->>>>>>> Stashed changes
 
 
 
