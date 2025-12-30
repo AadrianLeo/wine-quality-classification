@@ -8,8 +8,23 @@ install.packages("here")
 
 library(here)
 
+<<<<<<< Updated upstream
 ## Step 1 — Load the raw data
 
+=======
+# Introduction
+
+This report prepares and explores the red wine quality dataset. The goals are to:
+
+- Load the raw data from the project `data` folder.
+- Perform initial exploratory data analysis (EDA).
+- Engineer a binary target variable ("Poor" vs. "Premium" wines).
+- Save a cleaned version of the dataset for modeling.
+
+# Load the Data
+
+```{r load-data}
+>>>>>>> Stashed changes
 # Path to the dataset (red wine quality)
 data_path <- here("D:/Project/ML2/winequality-red.csv")
 
@@ -39,7 +54,14 @@ hist(
   breaks = 10
 )
 
+<<<<<<< Updated upstream
 # Ensure numeric types for key variables
+=======
+# Data Exploration
+
+We ensure that key variables are treated as numeric and visually compare alcohol content across quality scores.
+```{r ensure-numeric}
+>>>>>>> Stashed changes
 wine$quality <- as.numeric(as.character(wine$quality))
 wine$alcohol <- as.numeric(wine$alcohol)
 
@@ -55,7 +77,12 @@ str(wine)
 wine$quality_factor <- as.factor(wine$quality)
 str(wine)
 
+<<<<<<< Updated upstream
 ## Step 2 — Data cleaning & target engineering
+=======
+# Target Engineering and Cleaning
+We now create a binary classification target:
+>>>>>>> Stashed changes
 
 # 1. Create binary target variable
 #    Premium (1): quality >= 7
@@ -83,7 +110,16 @@ summary(wine_clean)
 
 ## Step 3 — Save cleaned dataset to a new CSV file
 
+<<<<<<< Updated upstream
 # Create data folder if it doesn't exist
+=======
+```
+
+
+# Save Cleaned Dataset
+Finally, we save the cleaned red wine dataset into the `data` folder so it can be reused for modeling.
+```{r save-cleaned}
+>>>>>>> Stashed changes
 dir.create(here("data"), showWarnings = FALSE)
 
 # Save cleaned wine dataset
@@ -92,6 +128,11 @@ write.csv(
   here("data", "winequality-red-clean.csv"),
   row.names = FALSE
 )
+<<<<<<< Updated upstream
+=======
+```
+# Checking Cleaned Dataset
+>>>>>>> Stashed changes
 
 ## Step 4 — Additional quality checks
 
@@ -138,6 +179,7 @@ head(wine_clean)
 
 
 
+<<<<<<< Updated upstream
 #______EDA___________________
 
 summary(wine_clean)
@@ -161,48 +203,67 @@ str(wine_clean)
 table(wine_clean$quality_binary)
 prop.table(table(wine_clean$quality_binary))
 
+=======
+# EDA
+## Distribution of Wine Quality
+```{r}
+>>>>>>> Stashed changes
 library(ggplot2)
 ggplot(wine, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
   xlab("Quality") + ylab("Count")
+```
 
-#The target variable quality_binary shows a strong class imbalance. 
-#Out of 1599 wines, 1382 (86%) are labeled Poor, while only 217 (14%) are labeled Premium. 
-#This indicates that Premium wines are less frequent,
-#which should be considered when evaluating model performance.
-
-#____________________________
-summary(wine_clean)
+The bar chart above illustrates the distribution of the target variable `quality_binary`.  
+The dataset shows a clear class imbalance, with the majority of observations belonging to the *Poor* quality category. Out of 1,599 wine samples, approximately **86% (1,382 wines)** are classified as *Poor*, while only **14% (217 wines)** are categorized as *Premium*. This indicates that Premium-quality wines occur far less frequently in the dataset compared to Poor-quality wines.
 
 
-
-
-#____________________________
-library(ggplot2)
-library(dplyr)
+## Correlation Analysis of Numeric Features
+```{r}
 library(corrplot)
 
 #Pairplot / Correlation plot
+<<<<<<< Updated upstream
 pairs(wine_clean[, sapply(wine_clean, is.numeric)], main = "Scatterplot Matrix of Numeric Variables")
 #__________________________
+=======
+library(corrplot)
+cor_mat <- cor(wine_clean[, numeric_cols])
+corrplot(cor_mat, method = "color", type = "upper")
+```
+>>>>>>> Stashed changes
 
 
+The correlation heatmap shows the pairwise relationships among numeric features in the wine dataset.
+
+- **High positive correlations** are observed between **density and fixed acidity**, and between **citric acid and fixed acidity**, suggesting that wines with higher fixed acidity also tend to have higher density and citric acid content. 
+
+- **Negative correlations** are seen between **pH and fixed acidity**, and **alcohol and density**, indicating that wines with higher fixed acidity have lower pH, and higher alcohol content is associated with lower density.  
+
+- Some features show **very weak or negligible correlations**, such as **alcohol versus citric acid** and **alcohol versus fixed acidity**, implying that these variables are largely independent of each other.  
+
+These relationships help identify which variables are related and which are not, providing insights for feature selection and further analysis.
+
+
+
+
+## Density vs Fixed Acidity
+
+```{r}
 par(mfrow = c(2, 3)) 
-
-# Density vs Fixed Acidity
 r1 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$density), 2)
 plot(wine_clean$`fixed.acidity`, wine_clean$density,
      main = paste("Density vs Fixed Acidity (r =", r1, ")"),
      xlab = "Fixed Acidity", ylab = "Density",
-     col = "orange", pch = 16)
+     col = "steelblue", pch = 16)
 
 # Citric Acid vs Fixed Acidity
 r2 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$`citric.acid`), 2)
 plot(wine_clean$`fixed.acidity`, wine_clean$`citric.acid`,
      main = paste("Citric Acid vs Fixed Acidity (r =", r2, ")"),
      xlab = "Fixed Acidity", ylab = "Citric Acid",
-     col = "orange", pch = 16)
+     col = "steelblue", pch = 16)
 
 # pH vs Fixed Acidity
 r3 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$pH), 2)
@@ -223,38 +284,64 @@ r5 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$alcohol), 2)
 plot(wine_clean$`fixed.acidity`, wine_clean$alcohol,
      main = paste("Alcohol vs Fixed Acidity (r =", r5, ")"),
      xlab = "Fixed Acidity", ylab = "Alcohol",
-     col = "blue", pch = 16)
+     col = "pink", pch = 16)
 
 # Alcohol vs Citric Acid
 r6 <- round(cor(wine_clean$`citric.acid`, wine_clean$alcohol), 2)
 plot(wine_clean$`citric.acid`, wine_clean$alcohol,
      main = paste("Alcohol vs Citric Acid (r =", r6, ")"),
      xlab = "Citric Acid", ylab = "Alcohol",
-     col = "blue", pch = 16)
+     col = "pink", pch = 16)
 
 
-par(mfrow = c(1, 1)) 
-#______________________________________
+par(mfrow = c(1, 1))  
+```
 
-#pH distribution
+- **Density vs Fixed Acidity (r = 0.67)** and **Citric Acid vs Fixed Acidity (r = 0.67)** show moderate-to-strong positive correlations, meaning that as Fixed Acidity increases, Density and Citric Acid also increase.
+
+- **pH vs Fixed Acidity (r = -0.68)** and **Alcohol vs Density (r = -0.5)** show negative correlations, meaning that as Fixed Acidity increases, pH decreases, and higher Alcohol content tends to lower Density.
+
+- where as **Alcohol vs Fixed Acidity** **(r = -0.06) and Alcohol vs Citric Acid (r = 0.11)** show negligible correlations.
+
+Fixed acidity in wine has a strong influence on its density, citric acid content, and pH. Higher levels of fixed acidity tend to increase density and citric acid while lowering pH, which aligns chemically with the expected inverse relationship between acidity and pH. In contrast, alcohol content shows a somewhat inverse relationship with density but appears largely independent of fixed acidity and citric acid. These patterns are consistent with the chemical properties of wine, where acids contribute to its overall density and acidity naturally reduces pH.
+
+
+## pH distribution
+
+```{r}
 hist(wine_clean$pH,
      main = "Distribution of pH in Red Wine",
      xlab = "pH",
      col = "lightblue",
      border = "black",
      breaks = 15)  # number of bins
+```
 
-#___________________________________________
-#alcohol distribution
+- The histogram shows that the pH values of red wine are approximately normally distributed, with most observations  **concentrated between pH 3.1 and 3.4 ** and a **clear peak around pH 3.3 **. Since pH indicates how acidic the wine is, with (lower pH values = higher acidity), this distribution suggests that most red wines in the dataset have a moderate and well-balanced level of acidity.Such balanced acidity is important for good taste, color stability, and preservation.
+
+- **Very low pH values below 3.0 and high pH values above 3.7 occur infrequently **, indicating that extreme acidity levels are rare. The small number of wines with higher pH values on the right side of the distribution are less acidic and relatively uncommon, while the close clustering of values overall suggests that the wine-making process is fairly consistent across samples.
+
+
+
+## Alcohol distribution
+
+```{r}
 hist(wine_clean$alcohol,
      main = "Distribution of Alcohol Content",
      xlab = "Alcohol (%)",
      col = "lightgreen",
      border = "black",
      breaks = 15)
+```
 
-#___________________________________________
-#Pie chart of quality_factor 
+- The histogram shows the distribution of alcohol content in red wine, which is slightly right-skewed. 
+Most wines have alcohol levels concentrated between about **9% and 11%**, with a **clear peak around 9.5–10%**, indicating that the **majority of samples have moderate alcohol content**. Lower alcohol values below 9% and higher values above 12% occur much less frequently, suggesting that extreme alcohol levels are uncommon. The long tail toward higher alcohol percentages shows that a smaller number of wines have relatively high alcohol content, reaching up to around 14–15%.
+
+- Overall it shows that, most wines have moderate alcohol content, with only a few unusually low or high.
+
+## Pie chart of quality_factor 
+
+```{r}
 q_table <- table(wine_clean$quality_factor)
 q_percent <- round(prop.table(q_table) * 100, 1)
 labels <- paste(names(q_table), "-", q_percent, "%")
@@ -264,19 +351,16 @@ pie(q_table,
     labels = labels,
     main = "Wine Quality Score Distribution",
     col = rainbow(length(q_table)))
-#____________________________________________
-#Box plot of quality factor vs alcohol
-boxplot(alcohol ~ quality_factor,
-        data = wine_clean,
-        main = "Alcohol Content by Wine Quality",
-        xlab = "Wine Quality Score",
-        ylab = "Alcohol (%)",
-        col = "lightblue")
-#___________________________________________
-
-#Groupby Quality vs other columns
+```
+- The pie chart illustrates the distribution of wine quality scores in the dataset. Most wines fall into the **medium quality range, with quality scores of 5 (42.6%) and 6 (39.9%)**, together accounting for the large majority of samples. This indicates that the dataset is dominated by average-quality wines. A smaller proportion of wines have higher quality scores, with **score 7 representing about 12.4%**, suggesting that good-quality wines are less common. 
+- **Very low and very high quality scores are rare**, as shown by the small percentages for scores **3 (0.6%), 4 (3.3%), and 8 (1.1%).** Overall, the distribution suggests that most wines are of moderate quality, with relatively few exceptional or poor-quality samples.
 
 
+
+
+## Groupby Quality vs other columns
+
+```{r}
 cols <- c("fixed.acidity", "volatile.acidity", "citric.acid",
           "residual.sugar", "chlorides", "free.sulfur.dioxide",
           "total.sulfur.dioxide", "density", "pH",
@@ -310,6 +394,22 @@ ggplot(
     position = "dodge"
   ) +
   
+  
+  scale_fill_manual(values = c(
+    "fixed.acidity" = "steelblue",
+    "volatile.acidity" = "orange",
+    "citric.acid" = "green",
+    "residual.sugar" = "red",
+    "chlorides" = "purple",
+    "free.sulfur.dioxide" = "brown",
+    "total.sulfur.dioxide" = "pink",
+    "density" = "grey",
+    "pH" = "yellow",
+    "sulphates" = "cyan",
+    "alcohol" = "darkblue"
+  )) +
+  
+  
   labs(
     title = "Grouped Bar Chart of Chemical Variables by Wine Quality",
     x = "Quality Factor",
@@ -322,17 +422,50 @@ ggplot(
     axis.title = element_text(size = 12),
     plot.title = element_text(size = 14, face = "bold")
   )
+```
 
-#_____________________
+From the grouped bar chart, we observe that Other variables like **chlorides, citric acid, density, sulphates, and volatile acidity** have lower average values and stay fairly stable across quality levels, suggesting they have a smaller impact on wine quality also **alcohol slightly increases as quality increases in 6,7,8 **. However, total sulfur dioxide shows a notable **peak at quality factor 5**, **slightly lower in 6, and decreases further in both lower and higher quality wines**. This suggests that medium-quality wines may require higher sulfur dioxide content, while higher-quality wines appear to use less, possibly due to better natural preservation and processing techniques.
 
+
+- **Essential for preservation:** Sulfur dioxide prevents oxidation and microbial spoilage, keeping wine stable and extending shelf life.
+
+- **Moderate amounts are beneficial:** Moderate SO₂ protects flavors and prevents undesirable changes during aging.
+
+- **Excessive amounts can harm quality:** Too much SO₂ can cause off-aromas, harsher taste, and lower perceived quality.
+
+- **Low sensory threshold:** Humans can detect sulfur at very low levels, so small increases can affect aroma and taste.
+
+The observed peak in total sulfur dioxide at quality factor 5 suggests that these wines require more chemical preservation, possibly due to lower natural stability or simpler winemaking processes. In contrast, higher-quality wines (6–8) use less sulfur dioxide, implying better natural quality and less reliance on additives. This aligns with wine science, which indicates that while sulphur dioxide is essential for wine preservation, excessive amounts can negatively influence taste and perceived quality.
+
+
+## Box plot of quality factor vs alcohol
+
+```{r}
+boxplot(alcohol ~ quality_factor,
+        data = wine_clean,
+        main = "Alcohol Content by Wine Quality",
+        xlab = "Wine Quality Score",
+        ylab = "Alcohol (%)",
+        col = "lightblue")
+```
+
+- The boxplot shows an increasing trend in alcohol content with rising wine quality, suggesting a **positive relationship between alcohol percentage and wine quality**. Quality factors **5 and 6 display a higher number of outliers**. These outliers indicate that alcohol content alone does not fully determine wine quality, as wines with unusually high or low alcohol levels can still receive similar quality scores.
+
+- When considering the **earlier visualization of total sulfur dioxide alongside the quality–alcohol** relationship, it becomes evident that wine quality is influenced by multiple interacting factors. **Higher alcohol content alone does not guarantee better quality**, as other components such as sulfur dioxide can negatively affect sensory perception when present in excess.
+
+
+
+
+
+<<<<<<< Updated upstream
 # Get unique quality factors
 qualities <- sort(unique(df$quality_factor))
 n <- length(qualities)
+=======
+>>>>>>> Stashed changes
 
-# Set up plotting grid (e.g., 2 rows, 3 columns for 6 qualities)
-par(mfrow = c(2, 3),      # adjust depending on number of qualities
-    mar = c(4, 4, 2, 1))  # margins: bottom, left, top, right
 
+<<<<<<< Updated upstream
 # Loop over each quality factor
 for(q in qualities) {
   subset_df <- df[df$quality_factor == q, ]
@@ -354,5 +487,16 @@ for(q in qualities) {
 
 
 
+=======
+
+<!-- wine$quality_factor <- as.factor(wine$quality) -->
+
+# Predictor variables will be standardized before training SVM, as SVM is sensitive to feature scaling The dataset shows a strong class imbalance, therefore performance evaluation will rely on ROC-AUC and F1-score rather than accuracy alone.
+
+```{r}
+wine_model <- wine_clean
+wine_model$quality_factor <- NULL
+```
+>>>>>>> Stashed changes
 
 

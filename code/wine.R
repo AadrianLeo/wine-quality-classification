@@ -138,6 +138,7 @@ head(wine_clean)
 
 
 
+<<<<<<< Updated upstream
 #______EDA___________________
 
 summary(wine_clean)
@@ -160,49 +161,46 @@ str(wine_clean)
 #___________________________________
 table(wine_clean$quality_binary)
 prop.table(table(wine_clean$quality_binary))
+=======
+#EDA
+>>>>>>> Stashed changes
 
+# 1. Disttibution of wine quality
 library(ggplot2)
 ggplot(wine, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
   xlab("Quality") + ylab("Count")
 
-#The target variable quality_binary shows a strong class imbalance. 
-#Out of 1599 wines, 1382 (86%) are labeled Poor, while only 217 (14%) are labeled Premium. 
-#This indicates that Premium wines are less frequent,
-#which should be considered when evaluating model performance.
 
-#____________________________
-summary(wine_clean)
-
-
-
-
-#____________________________
-library(ggplot2)
-library(dplyr)
 library(corrplot)
 
+<<<<<<< Updated upstream
 #Pairplot / Correlation plot
 pairs(wine_clean[, sapply(wine_clean, is.numeric)], main = "Scatterplot Matrix of Numeric Variables")
 #__________________________
+=======
+# 2. Correlation plot
+library(corrplot)
+cor_mat <- cor(wine_clean[, numeric_cols])
+corrplot(cor_mat, method = "color", type = "upper")
 
+>>>>>>> Stashed changes
 
+# 3.  Density vs Fixed Acidity
 par(mfrow = c(2, 3)) 
-
-# Density vs Fixed Acidity
 r1 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$density), 2)
 plot(wine_clean$`fixed.acidity`, wine_clean$density,
      main = paste("Density vs Fixed Acidity (r =", r1, ")"),
      xlab = "Fixed Acidity", ylab = "Density",
-     col = "orange", pch = 16)
+     col = "steelblue", pch = 16)
 
 # Citric Acid vs Fixed Acidity
 r2 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$`citric.acid`), 2)
 plot(wine_clean$`fixed.acidity`, wine_clean$`citric.acid`,
      main = paste("Citric Acid vs Fixed Acidity (r =", r2, ")"),
      xlab = "Fixed Acidity", ylab = "Citric Acid",
-     col = "orange", pch = 16)
+     col = "steelblue", pch = 16)
 
 # pH vs Fixed Acidity
 r3 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$pH), 2)
@@ -223,20 +221,19 @@ r5 <- round(cor(wine_clean$`fixed.acidity`, wine_clean$alcohol), 2)
 plot(wine_clean$`fixed.acidity`, wine_clean$alcohol,
      main = paste("Alcohol vs Fixed Acidity (r =", r5, ")"),
      xlab = "Fixed Acidity", ylab = "Alcohol",
-     col = "blue", pch = 16)
+     col = "pink", pch = 16)
 
 # Alcohol vs Citric Acid
 r6 <- round(cor(wine_clean$`citric.acid`, wine_clean$alcohol), 2)
 plot(wine_clean$`citric.acid`, wine_clean$alcohol,
      main = paste("Alcohol vs Citric Acid (r =", r6, ")"),
      xlab = "Citric Acid", ylab = "Alcohol",
-     col = "blue", pch = 16)
-
+     col = "pink", pch = 16)
 
 par(mfrow = c(1, 1)) 
-#______________________________________
 
-#pH distribution
+
+# 4. pH distribution
 hist(wine_clean$pH,
      main = "Distribution of pH in Red Wine",
      xlab = "pH",
@@ -244,8 +241,8 @@ hist(wine_clean$pH,
      border = "black",
      breaks = 15)  # number of bins
 
-#___________________________________________
-#alcohol distribution
+
+# 5. alcohol distribution
 hist(wine_clean$alcohol,
      main = "Distribution of Alcohol Content",
      xlab = "Alcohol (%)",
@@ -253,8 +250,8 @@ hist(wine_clean$alcohol,
      border = "black",
      breaks = 15)
 
-#___________________________________________
-#Pie chart of quality_factor 
+
+# 6. Pie chart of quality_factor 
 q_table <- table(wine_clean$quality_factor)
 q_percent <- round(prop.table(q_table) * 100, 1)
 labels <- paste(names(q_table), "-", q_percent, "%")
@@ -264,17 +261,10 @@ pie(q_table,
     labels = labels,
     main = "Wine Quality Score Distribution",
     col = rainbow(length(q_table)))
-#____________________________________________
-#Box plot of quality factor vs alcohol
-boxplot(alcohol ~ quality_factor,
-        data = wine_clean,
-        main = "Alcohol Content by Wine Quality",
-        xlab = "Wine Quality Score",
-        ylab = "Alcohol (%)",
-        col = "lightblue")
-#___________________________________________
 
-#Groupby Quality vs other columns
+
+
+# 7. Groupby Quality vs other columns
 
 
 cols <- c("fixed.acidity", "volatile.acidity", "citric.acid",
@@ -310,6 +300,22 @@ ggplot(
     position = "dodge"
   ) +
   
+  
+  scale_fill_manual(values = c(
+    "fixed.acidity" = "steelblue",
+    "volatile.acidity" = "orange",
+    "citric.acid" = "green",
+    "residual.sugar" = "red",
+    "chlorides" = "purple",
+    "free.sulfur.dioxide" = "brown",
+    "total.sulfur.dioxide" = "pink",
+    "density" = "grey",
+    "pH" = "yellow",
+    "sulphates" = "cyan",
+    "alcohol" = "darkblue"
+  )) +
+  
+  
   labs(
     title = "Grouped Bar Chart of Chemical Variables by Wine Quality",
     x = "Quality Factor",
@@ -322,7 +328,9 @@ ggplot(
     axis.title = element_text(size = 12),
     plot.title = element_text(size = 14, face = "bold")
   )
+par(mfrow = c(1, 1)) 
 
+<<<<<<< Updated upstream
 #_____________________
 
 # Get unique quality factors
@@ -353,6 +361,19 @@ for(q in qualities) {
 
 
 
+=======
+
+# 8. Box plot of quality factor vs alcohol
+boxplot(alcohol ~ quality_factor,
+        data = wine_clean,
+        main = "Alcohol Content by Wine Quality",
+        xlab = "Wine Quality Score",
+        ylab = "Alcohol (%)",
+        col = "lightblue")
+
+wine_model <- wine_clean
+wine_model$quality_factor <- NULL
+>>>>>>> Stashed changes
 
 
 
