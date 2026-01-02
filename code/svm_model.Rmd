@@ -1,5 +1,5 @@
 ---
-title: "Logistic Regression Model (Wine Quality)"
+title: "SVM Model (Wine Quality)"
 author: ""
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output:
@@ -16,17 +16,19 @@ set.seed(123)
 
 # Introduction
 
-This document fits a logistic regression model to the cleaned red wine quality data and evaluates its performance.
+This document fits a Support Vector Machine (SVM) model with a radial kernel to the cleaned red wine quality data and evaluates its performance.
 
 # Packages
 
 ```{r packages}
-# install.packages(c("here","caret","pROC","dplyr","tidyverse"))
+# If needed, install packages once in the R console, e.g.:
+# install.packages(c("here","caret","pROC","dplyr","kernlab"))
+
 library(here)
-library(tidyverse) 
 library(caret)
 library(pROC)
 library(dplyr)
+library(kernlab)  # required for svmRadial in caret
 ```
 
 # Load Data
@@ -55,7 +57,7 @@ str(wine_model)
 # Train / Validation / Test Split
 
 ```{r split-data}
-# 2) Train/Validation/Test Split (60/20/20)
+# 2) Train/Validation/Test Split (60/20/20) — same split logic as logistic
 idx_train <- createDataPartition(wine_model$quality_binary, p = 0.60, list = FALSE)
 train <- wine_model[idx_train, ]
 temp  <- wine_model[-idx_train, ]
@@ -67,24 +69,49 @@ test  <- temp[-idx_valid, ]
 sapply(list(train = train, valid = valid, test = test), nrow)
 ```
 
-# Fit Logistic Regression Model
+# Fit SVM (Radial) Model
 
-```{r fit-model}
-# 3) Fit Logistic Regression (GLM binomial)
-log_model <- glm(quality_binary ~ .,
-                 data = train,
-                 family = binomial)
+```{r fit-svm}
+# 3) Fit SVM (Radial) with CV tuning on TRAIN only
+# SVM is sensitive to scaling -> preProcess centers/scales predictors
+ctrl <- trainControl(
+  method = "cv",
+  number = 5,
+  classProbs = TRUE,
+  summaryFunction = twoClassSummary,
+  savePredictions = "final"
+)
 
-summary(log_model)
+svm_grid <- expand.grid(
+  sigma = c(0.005, 0.01, 0.02, 0.05),
+  C     = c(0.5, 1, 2, 5, 10)
+)
+
+svm_model <- train(
+  quality_binary ~ .,
+  data = train,
+  method = "svmRadial",
+  preProcess = c("center", "scale"),
+  metric = "ROC",
+  trControl = ctrl,
+  tuneGrid = svm_grid
+)
+
+svm_model
+svm_model$bestTune
 ```
 
-# Predictions and Threshold Selection
+# Predict Probabilities
 
-```{r predict-and-threshold}
+```{r predict-prob}
 # 4) Predict probabilities
-valid_prob <- predict(log_model, newdata = valid, type = "response")
-test_prob  <- predict(log_model, newdata = test,  type = "response")
+valid_prob <- predict(svm_model, newdata = valid, type = "prob")[, "Premium"]
+test_prob  <- predict(svm_model, newdata = test,  type = "prob")[, "Premium"]
+```
 
+# Choose Threshold (Validation Set)
+
+```{r choose-threshold}
 # 5) Choose threshold using Validation set (Youden's J from ROC)
 roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
 best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
@@ -92,21 +119,26 @@ best_thresh <- as.numeric(best["threshold"])
 best_thresh
 ```
 
-# Classification and Evaluation
+# Class Predictions
 
-```{r evaluation}
+```{r class-predictions}
 # 6) Class predictions using chosen threshold
 valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
                      levels = c("Poor","Premium"))
 test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
                      levels = c("Poor","Premium"))
+```
 
+# Model Evaluation
+
+```{r eval-valid}
 # 7) Evaluation (Validation)
 confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
-
 auc_valid <- auc(roc_valid)
 auc_valid
+```
 
+```{r eval-test}
 # 8) Final Evaluation (TEST ONLY)
 roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
 auc_test <- auc(roc_test)
@@ -115,40 +147,9 @@ auc_test
 confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
 ```
 
-# ROC Curve (Test Set)
+# ROC Plot (Test Set)
 
-```{r roc-plot, fig.width=6, fig.height=4}
+```{r roc-plot}
 # 9) Optional: ROC plot (test)
-plot(roc_test, main = "Logistic Regression ROC (Test Set)")
+plot(roc_test, main = "SVM (Radial) ROC (Test Set)")
 ```
-# 4) Predict probabilities
-valid_prob <- predict(log_model, newdata = valid, type = "response")
-test_prob  <- predict(log_model, newdata = test,  type = "response")
-
-# 5) Choose threshold using Validation set (Youden’s J from ROC)
-roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
-best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
-best_thresh <- as.numeric(best["threshold"])
-best_thresh
-
-# 6) Class predictions using chosen threshold
-valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
-                     levels = c("Poor","Premium"))
-test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
-                     levels = c("Poor","Premium"))
-
-# 7) Evaluation (Validation)
-confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
-
-auc_valid <- auc(roc_valid)
-auc_valid
-
-# 8) Final Evaluation (TEST ONLY) — this is what you report for comparison
-roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
-auc_test <- auc(roc_test)
-auc_test
-
-confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
-
-# 9) Optional: ROC plot (test)
-plot(roc_test, main = "Logistic Regression ROC (Test Set)")
