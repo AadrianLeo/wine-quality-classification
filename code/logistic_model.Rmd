@@ -77,3 +77,77 @@ log_model <- glm(quality_binary ~ .,
 summary(log_model)
 ```
 
+# Predictions and Threshold Selection
+
+```{r predict-and-threshold}
+# 4) Predict probabilities
+valid_prob <- predict(log_model, newdata = valid, type = "response")
+test_prob  <- predict(log_model, newdata = test,  type = "response")
+
+# 5) Choose threshold using Validation set (Youden's J from ROC)
+roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
+best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
+best_thresh <- as.numeric(best["threshold"])
+best_thresh
+```
+
+# Classification and Evaluation
+
+```{r evaluation}
+# 6) Class predictions using chosen threshold
+valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
+                     levels = c("Poor","Premium"))
+test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
+                     levels = c("Poor","Premium"))
+
+# 7) Evaluation (Validation)
+confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
+
+auc_valid <- auc(roc_valid)
+auc_valid
+
+# 8) Final Evaluation (TEST ONLY)
+roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
+auc_test <- auc(roc_test)
+auc_test
+
+confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+```
+
+# ROC Curve (Test Set)
+
+```{r roc-plot, fig.width=6, fig.height=4}
+# 9) Optional: ROC plot (test)
+plot(roc_test, main = "Logistic Regression ROC (Test Set)")
+```
+# 4) Predict probabilities
+valid_prob <- predict(log_model, newdata = valid, type = "response")
+test_prob  <- predict(log_model, newdata = test,  type = "response")
+
+# 5) Choose threshold using Validation set (Youden’s J from ROC)
+roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
+best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
+best_thresh <- as.numeric(best["threshold"])
+best_thresh
+
+# 6) Class predictions using chosen threshold
+valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
+                     levels = c("Poor","Premium"))
+test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
+                     levels = c("Poor","Premium"))
+
+# 7) Evaluation (Validation)
+confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
+
+auc_valid <- auc(roc_valid)
+auc_valid
+
+# 8) Final Evaluation (TEST ONLY) — this is what you report for comparison
+roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
+auc_test <- auc(roc_test)
+auc_test
+
+confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+
+# 9) Optional: ROC plot (test)
+plot(roc_test, main = "Logistic Regression ROC (Test Set)")
