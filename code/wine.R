@@ -1,5 +1,7 @@
 
 ## Wine Quality Project - Data Preparation Script
+install.packages("tinytex")
+tinytex::install_tinytex()
 
 ## Step 0 — Package setup
 
