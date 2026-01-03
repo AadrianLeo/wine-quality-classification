@@ -437,6 +437,95 @@ boxplot(alcohol ~ quality_factor,
 
 <!-- wine$quality_factor <- as.factor(wine$quality) -->
 
+# Mathematical Overview of Methods (ML1 + ML2)
+
+This section briefly summarizes the mathematical foundations of the two machine learning methods used in this project: **Logistic Regression (ML1)** and **Support Vector Machines with a Radial (RBF) kernel (ML2)**. The focus is on the key equations, decision rules, and the meaning of the main hyperparameters.
+
+## Logistic Regression (ML1)
+
+Logistic Regression is a probabilistic classification model that directly models the conditional probability of the positive class (here: **Premium**) given an input feature vector \(x \in \mathbb{R}^p\). Let \(Y \in \{0,1\}\) denote the class label (0 = Poor, 1 = Premium). Logistic regression assumes that the **log-odds** of the positive class are a linear function of the predictors:
+
+\[
+\log\left(\frac{P(Y=1\mid x)}{1-P(Y=1\mid x)}\right) = \beta_0 + \beta^T x
+\]
+
+Applying the inverse logit (sigmoid) function gives the predicted probability:
+
+\[
+P(Y=1\mid x) = \sigma(\beta_0 + \beta^T x)
+           = \frac{1}{1+\exp\left(-(\beta_0 + \beta^T x)\right)}
+\]
+
+The parameters \(\beta_0, \beta\) are estimated via **maximum likelihood estimation (MLE)**. For \(n\) observations \(\{(x_i,y_i)\}_{i=1}^n\), the likelihood is:
+
+\[
+L(\beta) = \prod_{i=1}^n p_i^{y_i}(1-p_i)^{1-y_i},
+\quad \text{where } p_i = P(Y=1\mid x_i)
+\]
+
+Equivalently, one maximizes the log-likelihood:
+
+\[
+\ell(\beta) = \sum_{i=1}^n \left[y_i\log(p_i) + (1-y_i)\log(1-p_i)\right]
+\]
+
+To obtain class predictions, a decision threshold \(t \in (0,1)\) is chosen:
+
+\[
+\hat{y}=
+\begin{cases}
+1 & \text{if } \hat{p} \ge t \\
+0 & \text{if } \hat{p} < t
+\end{cases}
+\]
+
+Because the dataset is imbalanced, using \(t=0.5\) is not always optimal; therefore, the threshold can be selected on the validation set using a criterion such as **Youden’s J** from the ROC curve.
+
+---
+
+## Support Vector Machine with RBF Kernel (ML2)
+
+Support Vector Machines (SVMs) are margin-based classifiers. In the linearly separable case, the goal is to find a hyperplane
+
+\[
+f(x) = w^T x + b
+\]
+
+that separates the classes while maximizing the **margin**, i.e., the distance between the hyperplane and the closest training points (the **support vectors**). In practice, perfect separation is rarely possible, so SVMs use the **soft-margin** formulation with slack variables \(\xi_i\), controlled by the hyperparameter \(C>0\):
+
+\[
+\min_{w,b,\xi}\;\;\frac{1}{2}\|w\|^2 + C\sum_{i=1}^n \xi_i
+\]
+subject to
+\[
+y_i(w^T x_i + b) \ge 1 - \xi_i,\quad \xi_i \ge 0,\;\; i=1,\dots,n
+\]
+
+The parameter \(C\) determines the trade-off between:
+- **large margin** (simpler decision boundary, more regularization) and
+- **classification errors** on the training set (less regularization).
+
+If the data are not linearly separable in the original feature space, SVMs can use a **kernel function** \(K(x,x')\) to represent a nonlinear decision boundary implicitly. In this project, we use the **Radial Basis Function (RBF) kernel**:
+
+\[
+K(x,x') = \exp\left(-\gamma \|x-x'\|^2\right)
+\]
+
+In `caret::svmRadial`, this is often parameterized using \(\sigma\), where typically \(\gamma\) is related to \(\sigma\) (depending on implementation) and controls how quickly similarity decays with distance. Intuitively:
+
+- **Large \(\gamma\)** (small \(\sigma\)) → very flexible, highly nonlinear boundary (risk of overfitting)  
+- **Small \(\gamma\)** (large \(\sigma\)) → smoother boundary (risk of underfitting)
+
+Thus, for RBF-SVM we tune:
+- \(C\): penalty for misclassification (margin vs errors)
+- \(\sigma\) (or \(\gamma\)): kernel width (complexity / smoothness)
+
+Since SVM relies on distances, it is **sensitive to feature scaling**, so predictors should be standardized (centered and scaled) before training.
+
+---
+
+**Summary:** Logistic Regression is a linear probabilistic classifier based on log-odds and maximum likelihood estimation, while RBF-SVM is a margin-based method that can create nonlinear decision boundaries through the kernel trick. Both methods output scores/probabilities that can be converted into class labels using a threshold chosen on the validation set, which is especially important under
+
 
 # Predictor variables will be standardized before training SVM, as SVM is sensitive to feature scaling The dataset shows a strong class imbalance, therefore performance evaluation will rely on ROC-AUC and F1-score rather than accuracy alone.
 

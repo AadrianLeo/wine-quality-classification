@@ -382,41 +382,48 @@ columns</a></li>
 <li><a href="#box-plot-of-quality-factor-vs-alcohol" id="toc-box-plot-of-quality-factor-vs-alcohol"><span class="toc-section-number">7.8</span> Box plot of quality factor vs
 alcohol</a></li>
 </ul></li>
-<li><a href="#predictor-variables-will-be-standardized-before-training-svm-as-svm-is-sensitive-to-feature-scaling-the-dataset-shows-a-strong-class-imbalance-therefore-performance-evaluation-will-rely-on-roc-auc-and-f1-score-rather-than-accuracy-alone." id="toc-predictor-variables-will-be-standardized-before-training-svm-as-svm-is-sensitive-to-feature-scaling-the-dataset-shows-a-strong-class-imbalance-therefore-performance-evaluation-will-rely-on-roc-auc-and-f1-score-rather-than-accuracy-alone."><span class="toc-section-number">8</span> Predictor variables will be
+<li><a href="#mathematical-overview-of-methods-ml1-ml2" id="toc-mathematical-overview-of-methods-ml1-ml2"><span class="toc-section-number">8</span> Mathematical Overview of Methods
+(ML1 + ML2)</a>
+<ul>
+<li><a href="#logistic-regression-ml1" id="toc-logistic-regression-ml1"><span class="toc-section-number">8.1</span> Logistic Regression (ML1)</a></li>
+<li><a href="#support-vector-machine-with-rbf-kernel-ml2" id="toc-support-vector-machine-with-rbf-kernel-ml2"><span class="toc-section-number">8.2</span> Support Vector Machine with RBF
+Kernel (ML2)</a></li>
+</ul></li>
+<li><a href="#predictor-variables-will-be-standardized-before-training-svm-as-svm-is-sensitive-to-feature-scaling-the-dataset-shows-a-strong-class-imbalance-therefore-performance-evaluation-will-rely-on-roc-auc-and-f1-score-rather-than-accuracy-alone." id="toc-predictor-variables-will-be-standardized-before-training-svm-as-svm-is-sensitive-to-feature-scaling-the-dataset-shows-a-strong-class-imbalance-therefore-performance-evaluation-will-rely-on-roc-auc-and-f1-score-rather-than-accuracy-alone."><span class="toc-section-number">9</span> Predictor variables will be
 standardized before training SVM, as SVM is sensitive to feature scaling
 The dataset shows a strong class imbalance, therefore performance
 evaluation will rely on ROC-AUC and F1-score rather than accuracy
 alone.</a></li>
-<li><a href="#data-split-for-modeling-train-validation-test" id="toc-data-split-for-modeling-train-validation-test"><span class="toc-section-number">9</span> Data Split for Modeling (Train /
+<li><a href="#data-split-for-modeling-train-validation-test" id="toc-data-split-for-modeling-train-validation-test"><span class="toc-section-number">10</span> Data Split for Modeling (Train /
 Validation / Test)</a></li>
-<li><a href="#ml1-logistic-regression" id="toc-ml1-logistic-regression"><span class="toc-section-number">10</span> ML1: Logistic Regression</a>
+<li><a href="#ml1-logistic-regression" id="toc-ml1-logistic-regression"><span class="toc-section-number">11</span> ML1: Logistic Regression</a>
 <ul>
-<li><a href="#fit-logistic-regression-train-set" id="toc-fit-logistic-regression-train-set"><span class="toc-section-number">10.1</span> Fit Logistic Regression (Train
+<li><a href="#fit-logistic-regression-train-set" id="toc-fit-logistic-regression-train-set"><span class="toc-section-number">11.1</span> Fit Logistic Regression (Train
 Set)</a></li>
-<li><a href="#odds-ratios" id="toc-odds-ratios"><span class="toc-section-number">10.2</span> Odds Ratios</a></li>
-<li><a href="#validation-predict-probabilities" id="toc-validation-predict-probabilities"><span class="toc-section-number">10.3</span> Validation: Predict
+<li><a href="#odds-ratios" id="toc-odds-ratios"><span class="toc-section-number">11.2</span> Odds Ratios</a></li>
+<li><a href="#validation-predict-probabilities" id="toc-validation-predict-probabilities"><span class="toc-section-number">11.3</span> Validation: Predict
 Probabilities</a></li>
-<li><a href="#validation-roc-auc" id="toc-validation-roc-auc"><span class="toc-section-number">10.4</span> Validation: ROC &amp;
+<li><a href="#validation-roc-auc" id="toc-validation-roc-auc"><span class="toc-section-number">11.4</span> Validation: ROC &amp;
 AUC</a></li>
-<li><a href="#validation-choose-threshold-youden" id="toc-validation-choose-threshold-youden"><span class="toc-section-number">10.5</span> Validation: Choose Threshold
+<li><a href="#validation-choose-threshold-youden" id="toc-validation-choose-threshold-youden"><span class="toc-section-number">11.5</span> Validation: Choose Threshold
 (Youden)</a></li>
-<li><a href="#validation-confusion-matrix-default-0.5-vs-best-threshold" id="toc-validation-confusion-matrix-default-0.5-vs-best-threshold"><span class="toc-section-number">10.6</span> Validation: Confusion Matrix
+<li><a href="#validation-confusion-matrix-default-0.5-vs-best-threshold" id="toc-validation-confusion-matrix-default-0.5-vs-best-threshold"><span class="toc-section-number">11.6</span> Validation: Confusion Matrix
 (Default 0.5 vs Best Threshold)</a></li>
-<li><a href="#final-test-evaluation-use-test-only-once" id="toc-final-test-evaluation-use-test-only-once"><span class="toc-section-number">10.7</span> Final Test Evaluation (Use Test
+<li><a href="#final-test-evaluation-use-test-only-once" id="toc-final-test-evaluation-use-test-only-once"><span class="toc-section-number">11.7</span> Final Test Evaluation (Use Test
 Only Once)</a></li>
-<li><a href="#test-roc-auc" id="toc-test-roc-auc"><span class="toc-section-number">10.8</span> Test: ROC &amp; AUC</a></li>
+<li><a href="#test-roc-auc" id="toc-test-roc-auc"><span class="toc-section-number">11.8</span> Test: ROC &amp; AUC</a></li>
 </ul></li>
-<li><a href="#ml2-support-vector-machine-svm-model-wine-quality" id="toc-ml2-support-vector-machine-svm-model-wine-quality"><span class="toc-section-number">11</span> ML2: Support Vector Machine (SVM)
+<li><a href="#ml2-support-vector-machine-svm-model-wine-quality" id="toc-ml2-support-vector-machine-svm-model-wine-quality"><span class="toc-section-number">12</span> ML2: Support Vector Machine (SVM)
 Model (Wine Quality)</a>
 <ul>
-<li><a href="#packages" id="toc-packages"><span class="toc-section-number">11.1</span> Packages</a></li>
-<li><a href="#fit-svm-radial-model" id="toc-fit-svm-radial-model"><span class="toc-section-number">11.2</span> Fit SVM (Radial) Model</a></li>
-<li><a href="#predict-probabilities" id="toc-predict-probabilities"><span class="toc-section-number">11.3</span> Predict Probabilities</a></li>
-<li><a href="#choose-threshold-validation-set" id="toc-choose-threshold-validation-set"><span class="toc-section-number">11.4</span> Choose Threshold (Validation
+<li><a href="#packages" id="toc-packages"><span class="toc-section-number">12.1</span> Packages</a></li>
+<li><a href="#fit-svm-radial-model" id="toc-fit-svm-radial-model"><span class="toc-section-number">12.2</span> Fit SVM (Radial) Model</a></li>
+<li><a href="#predict-probabilities" id="toc-predict-probabilities"><span class="toc-section-number">12.3</span> Predict Probabilities</a></li>
+<li><a href="#choose-threshold-validation-set" id="toc-choose-threshold-validation-set"><span class="toc-section-number">12.4</span> Choose Threshold (Validation
 Set)</a></li>
-<li><a href="#class-predictions" id="toc-class-predictions"><span class="toc-section-number">11.5</span> Class Predictions</a></li>
-<li><a href="#model-evaluation" id="toc-model-evaluation"><span class="toc-section-number">11.6</span> Model Evaluation</a></li>
-<li><a href="#roc-plot-test-set" id="toc-roc-plot-test-set"><span class="toc-section-number">11.7</span> ROC Plot (Test Set)</a></li>
+<li><a href="#class-predictions" id="toc-class-predictions"><span class="toc-section-number">12.5</span> Class Predictions</a></li>
+<li><a href="#model-evaluation" id="toc-model-evaluation"><span class="toc-section-number">12.6</span> Model Evaluation</a></li>
+<li><a href="#roc-plot-test-set" id="toc-roc-plot-test-set"><span class="toc-section-number">12.7</span> ROC Plot (Test Set)</a></li>
 </ul></li>
 </ul>
 </div>
@@ -1160,8 +1167,119 @@ negatively affect sensory perception when present in excess.</p></li>
 <!-- wine$quality_factor <- as.factor(wine$quality) -->
 </div>
 </div>
-<div id="predictor-variables-will-be-standardized-before-training-svm-as-svm-is-sensitive-to-feature-scaling-the-dataset-shows-a-strong-class-imbalance-therefore-performance-evaluation-will-rely-on-roc-auc-and-f1-score-rather-than-accuracy-alone." class="section level1" number="8">
-<h1><span class="header-section-number">8</span> Predictor variables
+<div id="mathematical-overview-of-methods-ml1-ml2" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Mathematical Overview
+of Methods (ML1 + ML2)</h1>
+<p>This section briefly summarizes the mathematical foundations of the
+two machine learning methods used in this project: <strong>Logistic
+Regression (ML1)</strong> and <strong>Support Vector Machines with a
+Radial (RBF) kernel (ML2)</strong>. The focus is on the key equations,
+decision rules, and the meaning of the main hyperparameters.</p>
+<div id="logistic-regression-ml1" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Logistic Regression
+(ML1)</h2>
+<p>Logistic Regression is a probabilistic classification model that
+directly models the conditional probability of the positive class (here:
+<strong>Premium</strong>) given an input feature vector <span class="math inline">\(x \in \mathbb{R}^p\)</span>. Let <span class="math inline">\(Y \in \{0,1\}\)</span> denote the class label (0 =
+Poor, 1 = Premium). Logistic regression assumes that the
+<strong>log-odds</strong> of the positive class are a linear function of
+the predictors:</p>
+<p><span class="math display">\[
+\log\left(\frac{P(Y=1\mid x)}{1-P(Y=1\mid x)}\right) = \beta_0 + \beta^T
+x
+\]</span></p>
+<p>Applying the inverse logit (sigmoid) function gives the predicted
+probability:</p>
+<p><span class="math display">\[
+P(Y=1\mid x) = \sigma(\beta_0 + \beta^T x)
+           = \frac{1}{1+\exp\left(-(\beta_0 + \beta^T x)\right)}
+\]</span></p>
+<p>The parameters <span class="math inline">\(\beta_0, \beta\)</span>
+are estimated via <strong>maximum likelihood estimation (MLE)</strong>.
+For <span class="math inline">\(n\)</span> observations <span class="math inline">\(\{(x_i,y_i)\}_{i=1}^n\)</span>, the likelihood
+is:</p>
+<p><span class="math display">\[
+L(\beta) = \prod_{i=1}^n p_i^{y_i}(1-p_i)^{1-y_i},
+\quad \text{where } p_i = P(Y=1\mid x_i)
+\]</span></p>
+<p>Equivalently, one maximizes the log-likelihood:</p>
+<p><span class="math display">\[
+\ell(\beta) = \sum_{i=1}^n \left[y_i\log(p_i) +
+(1-y_i)\log(1-p_i)\right]
+\]</span></p>
+<p>To obtain class predictions, a decision threshold <span class="math inline">\(t \in (0,1)\)</span> is chosen:</p>
+<p><span class="math display">\[
+\hat{y}=
+\begin{cases}
+1 &amp; \text{if } \hat{p} \ge t \\
+0 &amp; \text{if } \hat{p} &lt; t
+\end{cases}
+\]</span></p>
+<p>Because the dataset is imbalanced, using <span class="math inline">\(t=0.5\)</span> is not always optimal; therefore,
+the threshold can be selected on the validation set using a criterion
+such as <strong>Youden’s J</strong> from the ROC curve.</p>
+<hr />
+</div>
+<div id="support-vector-machine-with-rbf-kernel-ml2" class="section level2" number="8.2">
+<h2><span class="header-section-number">8.2</span> Support Vector
+Machine with RBF Kernel (ML2)</h2>
+<p>Support Vector Machines (SVMs) are margin-based classifiers. In the
+linearly separable case, the goal is to find a hyperplane</p>
+<p><span class="math display">\[
+f(x) = w^T x + b
+\]</span></p>
+<p>that separates the classes while maximizing the
+<strong>margin</strong>, i.e., the distance between the hyperplane and
+the closest training points (the <strong>support vectors</strong>). In
+practice, perfect separation is rarely possible, so SVMs use the
+<strong>soft-margin</strong> formulation with slack variables <span class="math inline">\(\xi_i\)</span>, controlled by the hyperparameter
+<span class="math inline">\(C&gt;0\)</span>:</p>
+<p><span class="math display">\[
+\min_{w,b,\xi}\;\;\frac{1}{2}\|w\|^2 + C\sum_{i=1}^n \xi_i
+\]</span> subject to <span class="math display">\[
+y_i(w^T x_i + b) \ge 1 - \xi_i,\quad \xi_i \ge 0,\;\; i=1,\dots,n
+\]</span></p>
+<p>The parameter <span class="math inline">\(C\)</span> determines the
+trade-off between: - <strong>large margin</strong> (simpler decision
+boundary, more regularization) and - <strong>classification
+errors</strong> on the training set (less regularization).</p>
+<p>If the data are not linearly separable in the original feature space,
+SVMs can use a <strong>kernel function</strong> <span class="math inline">\(K(x,x&#39;)\)</span> to represent a nonlinear
+decision boundary implicitly. In this project, we use the <strong>Radial
+Basis Function (RBF) kernel</strong>:</p>
+<p><span class="math display">\[
+K(x,x&#39;) = \exp\left(-\gamma \|x-x&#39;\|^2\right)
+\]</span></p>
+<p>In <code>caret::svmRadial</code>, this is often parameterized using
+<span class="math inline">\(\sigma\)</span>, where typically <span class="math inline">\(\gamma\)</span> is related to <span class="math inline">\(\sigma\)</span> (depending on implementation) and
+controls how quickly similarity decays with distance. Intuitively:</p>
+<ul>
+<li><strong>Large <span class="math inline">\(\gamma\)</span></strong>
+(small <span class="math inline">\(\sigma\)</span>) → very flexible,
+highly nonlinear boundary (risk of overfitting)<br />
+</li>
+<li><strong>Small <span class="math inline">\(\gamma\)</span></strong>
+(large <span class="math inline">\(\sigma\)</span>) → smoother boundary
+(risk of underfitting)</li>
+</ul>
+<p>Thus, for RBF-SVM we tune: - <span class="math inline">\(C\)</span>:
+penalty for misclassification (margin vs errors) - <span class="math inline">\(\sigma\)</span> (or <span class="math inline">\(\gamma\)</span>): kernel width (complexity /
+smoothness)</p>
+<p>Since SVM relies on distances, it is <strong>sensitive to feature
+scaling</strong>, so predictors should be standardized (centered and
+scaled) before training.</p>
+<hr />
+<p><strong>Summary:</strong> Logistic Regression is a linear
+probabilistic classifier based on log-odds and maximum likelihood
+estimation, while RBF-SVM is a margin-based method that can create
+nonlinear decision boundaries through the kernel trick. Both methods
+output scores/probabilities that can be converted into class labels
+using a threshold chosen on the validation set, which is especially
+important under</p>
+</div>
+</div>
+<div id="predictor-variables-will-be-standardized-before-training-svm-as-svm-is-sensitive-to-feature-scaling-the-dataset-shows-a-strong-class-imbalance-therefore-performance-evaluation-will-rely-on-roc-auc-and-f1-score-rather-than-accuracy-alone." class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Predictor variables
 will be standardized before training SVM, as SVM is sensitive to feature
 scaling The dataset shows a strong class imbalance, therefore
 performance evaluation will rely on ROC-AUC and F1-score rather than
@@ -1169,9 +1287,9 @@ accuracy alone.</h1>
 <pre class="r"><code>wine_model &lt;- wine_clean
 wine_model$quality_factor &lt;- NULL</code></pre>
 </div>
-<div id="data-split-for-modeling-train-validation-test" class="section level1" number="9">
-<h1><span class="header-section-number">9</span> Data Split for Modeling
-(Train / Validation / Test)</h1>
+<div id="data-split-for-modeling-train-validation-test" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> Data Split for
+Modeling (Train / Validation / Test)</h1>
 <pre class="r"><code>library(caret)
 
 set.seed(42)
@@ -1203,12 +1321,12 @@ prop.table(table(train$quality_binary))</code></pre>
 ##      Poor   Premium 
 ## 0.8652038 0.1347962</code></pre>
 </div>
-<div id="ml1-logistic-regression" class="section level1" number="10">
-<h1><span class="header-section-number">10</span> ML1: Logistic
+<div id="ml1-logistic-regression" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> ML1: Logistic
 Regression</h1>
 <pre class="r"><code>library(pROC)</code></pre>
-<div id="fit-logistic-regression-train-set" class="section level2" number="10.1">
-<h2><span class="header-section-number">10.1</span> Fit Logistic
+<div id="fit-logistic-regression-train-set" class="section level2" number="11.1">
+<h2><span class="header-section-number">11.1</span> Fit Logistic
 Regression (Train Set)</h2>
 <pre class="r"><code>logit_model &lt;- glm(quality_binary ~ ., data = train, family = binomial)
 summary(logit_model)</code></pre>
@@ -1241,8 +1359,8 @@ summary(logit_model)</code></pre>
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
 </div>
-<div id="odds-ratios" class="section level2" number="10.2">
-<h2><span class="header-section-number">10.2</span> Odds Ratios</h2>
+<div id="odds-ratios" class="section level2" number="11.2">
+<h2><span class="header-section-number">11.2</span> Odds Ratios</h2>
 <pre class="r"><code>odds_ratios &lt;- exp(coef(logit_model))
 odds_ratios</code></pre>
 <pre><code>##          (Intercept)        fixed.acidity     volatile.acidity 
@@ -1269,16 +1387,16 @@ or_ci</code></pre>
 ## sulphates            4.481641e+01  9.543591e+00  2.104817e+02
 ## alcohol              2.915810e+00  2.013445e+00  4.286525e+00</code></pre>
 </div>
-<div id="validation-predict-probabilities" class="section level2" number="10.3">
-<h2><span class="header-section-number">10.3</span> Validation: Predict
+<div id="validation-predict-probabilities" class="section level2" number="11.3">
+<h2><span class="header-section-number">11.3</span> Validation: Predict
 Probabilities</h2>
 <pre class="r"><code>valid_prob &lt;- predict(logit_model, newdata = valid, type = &quot;response&quot;)
 head(valid_prob)</code></pre>
 <pre><code>##           4           6           7           8          14          18 
 ## 0.058192394 0.004359579 0.003853783 0.015813983 0.143089399 0.008104430</code></pre>
 </div>
-<div id="validation-roc-auc" class="section level2" number="10.4">
-<h2><span class="header-section-number">10.4</span> Validation: ROC
+<div id="validation-roc-auc" class="section level2" number="11.4">
+<h2><span class="header-section-number">11.4</span> Validation: ROC
 &amp; AUC</h2>
 <pre class="r"><code>roc_valid &lt;- roc(
   response = valid$quality_binary,
@@ -1292,8 +1410,8 @@ plot(roc_valid, col = &quot;darkgreen&quot;, main = &quot;ROC Curve - Logistic R
 <pre class="r"><code>auc(roc_valid)</code></pre>
 <pre><code>## Area under the curve: 0.8236</code></pre>
 </div>
-<div id="validation-choose-threshold-youden" class="section level2" number="10.5">
-<h2><span class="header-section-number">10.5</span> Validation: Choose
+<div id="validation-choose-threshold-youden" class="section level2" number="11.5">
+<h2><span class="header-section-number">11.5</span> Validation: Choose
 Threshold (Youden)</h2>
 <pre class="r"><code>best_valid &lt;- coords(
   roc_valid,
@@ -1305,8 +1423,8 @@ best_valid</code></pre>
 <pre><code>##    threshold sensitivity specificity
 ## 1 0.03720762   0.9302326   0.5869565</code></pre>
 </div>
-<div id="validation-confusion-matrix-default-0.5-vs-best-threshold" class="section level2" number="10.6">
-<h2><span class="header-section-number">10.6</span> Validation:
+<div id="validation-confusion-matrix-default-0.5-vs-best-threshold" class="section level2" number="11.6">
+<h2><span class="header-section-number">11.6</span> Validation:
 Confusion Matrix (Default 0.5 vs Best Threshold)</h2>
 <pre class="r"><code># Default threshold
 pred_valid_05 &lt;- ifelse(valid_prob &gt;= 0.5, &quot;Premium&quot;, &quot;Poor&quot;)
@@ -1377,8 +1495,8 @@ cm_valid_best</code></pre>
 ##        &#39;Positive&#39; Class : Premium         
 ## </code></pre>
 </div>
-<div id="final-test-evaluation-use-test-only-once" class="section level2" number="10.7">
-<h2><span class="header-section-number">10.7</span> Final Test
+<div id="final-test-evaluation-use-test-only-once" class="section level2" number="11.7">
+<h2><span class="header-section-number">11.7</span> Final Test
 Evaluation (Use Test Only Once)</h2>
 <pre class="r"><code>test_prob &lt;- predict(logit_model, newdata = test, type = &quot;response&quot;)
 
@@ -1415,8 +1533,8 @@ cm_test</code></pre>
 ##        &#39;Positive&#39; Class : Premium         
 ## </code></pre>
 </div>
-<div id="test-roc-auc" class="section level2" number="10.8">
-<h2><span class="header-section-number">10.8</span> Test: ROC &amp;
+<div id="test-roc-auc" class="section level2" number="11.8">
+<h2><span class="header-section-number">11.8</span> Test: ROC &amp;
 AUC</h2>
 <pre class="r"><code>roc_test &lt;- roc(
   response = test$quality_binary,
@@ -1431,11 +1549,11 @@ plot(roc_test, col = &quot;blue&quot;, main = &quot;ROC Curve - Logistic Regress
 <pre><code>## Area under the curve: 0.8264</code></pre>
 </div>
 </div>
-<div id="ml2-support-vector-machine-svm-model-wine-quality" class="section level1" number="11">
-<h1><span class="header-section-number">11</span> ML2: Support Vector
+<div id="ml2-support-vector-machine-svm-model-wine-quality" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> ML2: Support Vector
 Machine (SVM) Model (Wine Quality)</h1>
-<div id="packages" class="section level2" number="11.1">
-<h2><span class="header-section-number">11.1</span> Packages</h2>
+<div id="packages" class="section level2" number="12.1">
+<h2><span class="header-section-number">12.1</span> Packages</h2>
 <pre class="r"><code># If needed, install packages once in the R console, e.g.:
 # install.packages(c(&quot;here&quot;,&quot;caret&quot;,&quot;pROC&quot;,&quot;dplyr&quot;,&quot;kernlab&quot;))
 
@@ -1445,8 +1563,8 @@ library(pROC)
 library(dplyr)
 library(kernlab)  # required for svmRadial in caret</code></pre>
 </div>
-<div id="fit-svm-radial-model" class="section level2" number="11.2">
-<h2><span class="header-section-number">11.2</span> Fit SVM (Radial)
+<div id="fit-svm-radial-model" class="section level2" number="12.2">
+<h2><span class="header-section-number">12.2</span> Fit SVM (Radial)
 Model</h2>
 <pre class="r"><code># 3) Fit SVM (Radial) with CV tuning on TRAIN only
 # SVM is sensitive to scaling -&gt; preProcess centers/scales predictors
@@ -1513,15 +1631,15 @@ svm_model</code></pre>
 <pre><code>##   sigma C
 ## 9  0.01 5</code></pre>
 </div>
-<div id="predict-probabilities" class="section level2" number="11.3">
-<h2><span class="header-section-number">11.3</span> Predict
+<div id="predict-probabilities" class="section level2" number="12.3">
+<h2><span class="header-section-number">12.3</span> Predict
 Probabilities</h2>
 <pre class="r"><code># 4) Predict probabilities
 svm_valid_prob &lt;- predict(svm_model, newdata = valid, type = &quot;prob&quot;)[, &quot;Premium&quot;]
 svm_test_prob  &lt;- predict(svm_model, newdata = test,  type = &quot;prob&quot;)[, &quot;Premium&quot;]</code></pre>
 </div>
-<div id="choose-threshold-validation-set" class="section level2" number="11.4">
-<h2><span class="header-section-number">11.4</span> Choose Threshold
+<div id="choose-threshold-validation-set" class="section level2" number="12.4">
+<h2><span class="header-section-number">12.4</span> Choose Threshold
 (Validation Set)</h2>
 <pre class="r"><code># 5) Choose threshold using Validation set (Youden&#39;s J from ROC)
 svm_roc_valid &lt;- roc(
@@ -1542,8 +1660,8 @@ best_thresh &lt;- as.numeric(best[&quot;threshold&quot;])
 best_thresh</code></pre>
 <pre><code>## [1] 0.06260706</code></pre>
 </div>
-<div id="class-predictions" class="section level2" number="11.5">
-<h2><span class="header-section-number">11.5</span> Class
+<div id="class-predictions" class="section level2" number="12.5">
+<h2><span class="header-section-number">12.5</span> Class
 Predictions</h2>
 <pre class="r"><code># 6) Class predictions using chosen threshold
 valid_pred &lt;- factor(ifelse(svm_valid_prob &gt;= best_thresh, &quot;Premium&quot;, &quot;Poor&quot;),
@@ -1552,8 +1670,8 @@ valid_pred &lt;- factor(ifelse(svm_valid_prob &gt;= best_thresh, &quot;Premium&q
 test_pred  &lt;- factor(ifelse(svm_test_prob &gt;= best_thresh, &quot;Premium&quot;, &quot;Poor&quot;),
                      levels = c(&quot;Poor&quot;,&quot;Premium&quot;))</code></pre>
 </div>
-<div id="model-evaluation" class="section level2" number="11.6">
-<h2><span class="header-section-number">11.6</span> Model
+<div id="model-evaluation" class="section level2" number="12.6">
+<h2><span class="header-section-number">12.6</span> Model
 Evaluation</h2>
 <pre class="r"><code># 7) Evaluation (Validation)
 confusionMatrix(valid_pred, valid$quality_binary, positive = &quot;Premium&quot;)</code></pre>
@@ -1627,8 +1745,8 @@ svm_auc_test</code></pre>
 ##        &#39;Positive&#39; Class : Premium         
 ## </code></pre>
 </div>
-<div id="roc-plot-test-set" class="section level2" number="11.7">
-<h2><span class="header-section-number">11.7</span> ROC Plot (Test
+<div id="roc-plot-test-set" class="section level2" number="12.7">
+<h2><span class="header-section-number">12.7</span> ROC Plot (Test
 Set)</h2>
 <pre class="r"><code># 9) Optional: ROC plot (test)
 plot(svm_roc_test, main = &quot;SVM (Radial) ROC (Test Set)&quot;)</code></pre>
