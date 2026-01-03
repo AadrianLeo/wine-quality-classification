@@ -437,6 +437,7 @@ boxplot(alcohol ~ quality_factor,
 
 <!-- wine$quality_factor <- as.factor(wine$quality) -->
 
+
 # Predictor variables will be standardized before training SVM, as SVM is sensitive to feature scaling The dataset shows a strong class imbalance, therefore performance evaluation will rely on ROC-AUC and F1-score rather than accuracy alone.
 
 ```{r}
@@ -631,28 +632,44 @@ svm_model$bestTune
 
 ```{r predict-prob}
 # 4) Predict probabilities
-valid_prob <- predict(svm_model, newdata = valid, type = "prob")[, "Premium"]
-test_prob  <- predict(svm_model, newdata = test,  type = "prob")[, "Premium"]
+svm_valid_prob <- predict(svm_model, newdata = valid, type = "prob")[, "Premium"]
+svm_test_prob  <- predict(svm_model, newdata = test,  type = "prob")[, "Premium"]
+
 ```
 
 ## Choose Threshold (Validation Set)
 
 ```{r choose-threshold}
 # 5) Choose threshold using Validation set (Youden's J from ROC)
-roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
-best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
+svm_roc_valid <- roc(
+  response = valid$quality_binary,
+  predictor = svm_valid_prob,
+  levels = c("Poor","Premium"),
+  direction = "<"
+)
+
+best <- coords(
+  svm_roc_valid,
+  x = "best",
+  best.method = "youden",
+  transpose = FALSE
+)
+
 best_thresh <- as.numeric(best["threshold"])
 best_thresh
+
 ```
 
 ## Class Predictions
 
 ```{r class-predictions}
 # 6) Class predictions using chosen threshold
-valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
+valid_pred <- factor(ifelse(svm_valid_prob >= best_thresh, "Premium", "Poor"),
                      levels = c("Poor","Premium"))
-test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
+
+test_pred  <- factor(ifelse(svm_test_prob >= best_thresh, "Premium", "Poor"),
                      levels = c("Poor","Premium"))
+
 ```
 
 ## Model Evaluation
@@ -660,22 +677,33 @@ test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
 ```{r eval-valid}
 # 7) Evaluation (Validation)
 confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
-auc_valid <- auc(roc_valid)
-auc_valid
+
+svm_auc_valid <- auc(svm_roc_valid)
+svm_auc_valid
+
 ```
 
 ```{r eval-test}
 # 8) Final Evaluation (TEST ONLY)
-roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
-auc_test <- auc(roc_test)
-auc_test
+svm_roc_test <- roc(
+  response = test$quality_binary,
+  predictor = svm_test_prob,
+  levels = c("Poor","Premium"),
+  direction = "<"
+)
+
+svm_auc_test <- auc(svm_roc_test)
+svm_auc_test
 
 confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+
 ```
 
 ## ROC Plot (Test Set)
 
 ```{r roc-plot}
 # 9) Optional: ROC plot (test)
-plot(roc_test, main = "SVM (Radial) ROC (Test Set)")
+plot(svm_roc_test, main = "SVM (Radial) ROC (Test Set)")
 ```
+
+
