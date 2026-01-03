@@ -44,6 +44,7 @@ wine <- read.csv2(data_path)
 
 ## Basic structure and sanity checks
 dim(wine)
+names(wine)
 str(wine)
 nrow(wine)
 ncol(wine)
@@ -738,6 +739,27 @@ svm_roc_valid <- roc(
   levels = c("Poor","Premium"),
   direction = "<"
 )
+plot(
+  svm_roc_valid,
+  col = "#1f77b4",          # professional blue
+  lwd = 2,                  # thicker line
+  main = "ROC Curve for SVM (Validation Set)",
+  legacy.axes = TRUE
+)
+
+# Add diagonal reference line
+abline(a = 0, b = 1, lty = 2, col = "gray")
+
+# Add AUC text on the plot
+auc_val <- auc(svm_roc_valid)
+legend(
+  "bottomright",
+  legend = paste("AUC =", round(auc_val, 3)),
+  col = "#1f77b4",
+  lwd = 2,
+  bty = "n"
+)
+
 
 best <- coords(
   svm_roc_valid,

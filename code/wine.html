@@ -458,6 +458,11 @@ wine &lt;- read.csv2(data_path)
 ## Basic structure and sanity checks
 dim(wine)</code></pre>
 <pre><code>## [1] 1599   12</code></pre>
+<pre class="r"><code>names(wine)</code></pre>
+<pre><code>##  [1] &quot;fixed.acidity&quot;        &quot;volatile.acidity&quot;     &quot;citric.acid&quot;         
+##  [4] &quot;residual.sugar&quot;       &quot;chlorides&quot;            &quot;free.sulfur.dioxide&quot; 
+##  [7] &quot;total.sulfur.dioxide&quot; &quot;density&quot;              &quot;pH&quot;                  
+## [10] &quot;sulphates&quot;            &quot;alcohol&quot;              &quot;quality&quot;</code></pre>
 <pre class="r"><code>str(wine)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    1599 obs. of  12 variables:
 ##  $ fixed.acidity       : chr  &quot;7.4&quot; &quot;7.8&quot; &quot;7.8&quot; &quot;11.2&quot; ...
@@ -1657,6 +1662,7 @@ svm_roc_valid &lt;- roc(
   levels = c(&quot;Poor&quot;,&quot;Premium&quot;),
   direction = &quot;&lt;&quot;
 )
+
 
 best &lt;- coords(
   svm_roc_valid,
