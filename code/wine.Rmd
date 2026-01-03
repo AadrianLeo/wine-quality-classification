@@ -7,6 +7,8 @@ output:
     toc: true
     toc_depth: 2
     number_sections: true
+bibliography: references.bib
+
 ---
 
 ```{r setup, include=FALSE}
@@ -944,7 +946,7 @@ plot(ale_svm)
 ```{r local-explanations}
 set.seed(123)
 ```
-# Pick a few test observations for local explanations
+
 ```{r select-local}
 example_idx <- sample(seq_len(nrow(test)), 3)
 local_obs   <- test[example_idx, ]
@@ -956,6 +958,7 @@ local_y
 
 # Break-down (additive) explanations for Logistic Regression
 ```{r break-down}
+# Break-down (additive) explanations for Logistic Regression
 bd_logit <- predict_parts(
   explainer_logit,
   new_observation = local_x[1, , drop = FALSE],
@@ -988,3 +991,14 @@ shap_svm <- predict_parts(
 plot(shap_logit)
 plot(shap_svm)
 ```
+
+
+# References
+
+- Iowa State University Extension. (2021). [Understanding Wine Quality Parameters](https://www.extension.iastate.edu/wine/wp-content/uploads/2021/09/FS40.pdf).
+- Cortez, P. (2018). [Modeling wine preferences by data mining from physicochemical properties](https://www.nature.com/articles/s41598-018-19185-5). *Scientific Reports*.
+- Vinetur. (2025). [Sulfur in winemaking: Industry divided over impact on taste and quality](https://www.vinetur.com/en/2025012084084/sulfur-in-winemaking-industry-divided-over-impact-on-taste-and-quality.html).
+- Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J. (2009). Modeling wine preferences by data mining from physicochemical properties. *Decision Support Systems*, 47(4), 547-553. https://doi.org/10.1016/j.dss.2009.05.016
+- Kuhn, M. (2008). Building Predictive Models in R Using the caret Package. *Journal of Statistical Software*, 28(5), 1-26. https://doi.org/10.18637/jss.v028.i05
+- Biecek, P. (2018). *DALEX: Explainers for Complex Predictive Models in R*. *Journal of Machine Learning Research*, 19(84), 1-5. http://jmlr.org/papers/v19/18-416.html
+- Molnar, C. (2020). *Interpretable Machine Learning*. https://christophm.github.io/interpretable-ml-book/
