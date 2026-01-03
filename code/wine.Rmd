@@ -841,5 +841,150 @@ compare_table
 **Test-set comparison :**  
 The table compares Logistic Regression and the Radial SVM on the same held-out test set using ROC-AUC and threshold-based metrics focused on the minority class (*Premium*). Logistic Regression achieves a slightly higher **Test AUC** (0.826) than SVM (0.807), indicating better overall ranking/discrimination across thresholds. Using the validation-selected thresholds, both models reach the same **Recall for Premium** (0.907), meaning they successfully identify most Premium wines. However, **Precision** is low for both models (~0.23), showing that many wines predicted as Premium are actually Poor, which is expected in an imbalanced setting. The SVM shows a marginally higher **F1-score** (0.373 vs 0.370) and **Balanced Accuracy** (0.723 vs 0.720), but the differences are very small. Overall, Logistic Regression is preferable if we prioritize global discrimination (AUC), while SVM offers a slight advantage in threshold-based classification metrics; given the minimal gap, model choice can be guided by the preferred objective and interpretability considerations.
 
+# Model-Agnostic XAI for Logistic Regression and SVM
 
+```{r xai-setup}
+# install.packages("DALEX")        # run once if needed
+# install.packages("ingredients")  # optional, DALEX imports it
 
+library(DALEX)
+
+# Use same training data as for the models
+x_train <- train %>% dplyr::select(-quality_binary)
+y_train <- ifelse(train$quality_binary == "Premium", 1, 0)
+
+# Explainer for Logistic Regression (probability of Premium)
+explainer_logit <- explain(
+  model            = logit_model,
+  data             = x_train,
+  y                = y_train,
+  label            = "Logistic Regression",
+  predict_function = function(m, newdata) {
+    predict(m, newdata, type = "response")
+  }
+)
+
+# Explainer for SVM (caret::train with svmRadial, probability of Premium)
+explainer_svm <- explain(
+  model            = svm_model,
+  data             = x_train,
+  y                = y_train,
+  label            = "SVM (Radial)",
+  predict_function = function(m, newdata) {
+    predict(m, newdata, type = "prob")[, "Premium"]
+  }
+)
+```
+
+# Global permutation feature importance for both models
+```{r feature-importance}
+# Custom binary cross-entropy loss for numeric 0/1 target and probability predictions
+loss_bce <- function(observed, predicted) {
+  eps <- 1e-15
+  predicted <- pmin(pmax(predicted, eps), 1 - eps)
+  -mean(observed * log(predicted) + (1 - observed) * log(1 - predicted))
+}
+
+fi_logit <- model_parts(
+  explainer_logit,
+  type = "variable_importance",
+  loss_function = loss_bce
+)
+
+fi_svm <- model_parts(
+  explainer_svm,
+  type = "variable_importance",
+  loss_function = loss_bce
+)
+
+# Side-by-side comparison (top variables)
+plot(fi_logit, fi_svm, max_vars = 10)
+fi_logit
+fi_svm
+```
+
+# Choose a few key variables for detailed effect plots
+```{r pdp-ale}
+vars_of_interest <- c("alcohol", "sulphates", "volatile.acidity")
+
+# Partial dependence profiles
+pdp_logit <- model_profile(
+  explainer_logit,
+  variables = vars_of_interest,
+  type      = "partial"
+)
+
+pdp_svm <- model_profile(
+  explainer_svm,
+  variables = vars_of_interest,
+  type      = "partial"
+)
+
+# Plot PDPs for each model
+plot(pdp_logit)
+plot(pdp_svm)
+
+# (Alternative: ALE profiles instead of PDPs)
+ale_logit <- model_profile(
+  explainer_logit,
+  variables = vars_of_interest,
+  type      = "accumulated"
+)
+
+ale_svm <- model_profile(
+  explainer_svm,
+  variables = vars_of_interest,
+  type      = "accumulated"
+)
+
+plot(ale_logit)
+plot(ale_svm)
+```
+# Microscopic (Local) Explanations for Individual Wines
+```{r local-explanations}
+set.seed(123)
+```
+# Pick a few test observations for local explanations
+```{r select-local}
+example_idx <- sample(seq_len(nrow(test)), 3)
+local_obs   <- test[example_idx, ]
+local_x     <- local_obs %>% dplyr::select(-quality_binary)
+local_y     <- local_obs$quality_binary
+local_obs
+local_y
+```
+
+# Break-down (additive) explanations for Logistic Regression
+```{r break-down}
+bd_logit <- predict_parts(
+  explainer_logit,
+  new_observation = local_x[1, , drop = FALSE],
+  type            = "break_down"
+)
+
+# Break-down explanations for SVM
+bd_svm <- predict_parts(
+  explainer_svm,
+  new_observation = local_x[1, , drop = FALSE],
+  type            = "break_down"
+)
+
+plot(bd_logit)
+plot(bd_svm)
+
+# SHAP-like local explanations (can be slower)
+shap_logit <- predict_parts(
+  explainer_logit,
+  new_observation = local_x[1, , drop = FALSE],
+  type            = "shap"
+)
+
+shap_svm <- predict_parts(
+  explainer_svm,
+  new_observation = local_x[1, , drop = FALSE],
+  type            = "shap"
+)
+
+plot(shap_logit)
+plot(shap_svm)
+```
