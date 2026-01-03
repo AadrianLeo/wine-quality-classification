@@ -794,5 +794,50 @@ confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
 # 9) Optional: ROC plot (test)
 plot(svm_roc_test, main = "SVM (Radial) ROC (Test Set)")
 ```
+# (c) Fair Comparison of Logistic Regression vs SVM (Test Set)
+
+```{r compare-test}
+
+# --- Logistic Regression: compute test predictions + metrics using best_thr ---
+# (These variables already exist from your LR section: test_prob, best_thr, roc_test)
+logit_test_prob <- test_prob
+logit_thr <- best_thr
+
+logit_test_pred <- factor(
+  ifelse(logit_test_prob >= logit_thr, "Premium", "Poor"),
+  levels = c("Poor", "Premium")
+)
+
+cm_logit_test <- confusionMatrix(logit_test_pred, test$quality_binary, positive = "Premium")
+
+# AUC for Logistic Regression (already computed as auc(roc_test), but we store it)
+auc_logit_test <- as.numeric(auc(roc_test))
+
+
+# --- SVM: compute metrics using best_thresh ---
+# (These variables already exist from your SVM section: svm_test_prob, best_thresh, svm_roc_test)
+svm_test_pred2 <- factor(
+  ifelse(svm_test_prob >= best_thresh, "Premium", "Poor"),
+  levels = c("Poor", "Premium")
+)
+
+cm_svm_test <- confusionMatrix(svm_test_pred2, test$quality_binary, positive = "Premium")
+auc_svm_test <- as.numeric(auc(svm_roc_test))
+
+
+# --- Create a fair side-by-side table (Premium is the positive class) ---
+compare_table <- data.frame(
+  Model = c("Logistic Regression", "SVM (Radial)"),
+  Test_AUC = c(auc_logit_test, auc_svm_test),
+  Precision_Premium = c(cm_logit_test$byClass["Precision"], cm_svm_test$byClass["Precision"]),
+  Recall_Premium    = c(cm_logit_test$byClass["Recall"],    cm_svm_test$byClass["Recall"]),
+  F1_Premium        = c(cm_logit_test$byClass["F1"],        cm_svm_test$byClass["F1"]),
+  Balanced_Accuracy = c(cm_logit_test$byClass["Balanced Accuracy"], cm_svm_test$byClass["Balanced Accuracy"])
+)
+
+compare_table
+```
+
+
 
 
