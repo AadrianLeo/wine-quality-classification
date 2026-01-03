@@ -445,16 +445,11 @@ wine_model$quality_factor <- NULL
 ```
 
 
-# ML1: Logistic Regression
+# Data Split for Modeling (Train / Validation / Test)
 
 ```{r}
 library(caret)
-library(pROC)
-```
 
-## Train / Validation / Test Split (60/20/20)
-
-```{r}
 set.seed(42)
 
 idx_train <- createDataPartition(wine_model$quality_binary, p = 0.60, list = FALSE)
@@ -465,9 +460,22 @@ idx_valid <- createDataPartition(temp$quality_binary, p = 0.50, list = FALSE)
 valid <- temp[idx_valid, ]
 test  <- temp[-idx_valid, ]
 
+dir.create(here("data"), showWarnings = FALSE)
+
+write.csv(train, here("data", "wine_train.csv"), row.names = FALSE)
+write.csv(valid, here("data", "wine_valid.csv"), row.names = FALSE)
+write.csv(test,  here("data", "wine_test.csv"),  row.names = FALSE)
+
 prop.table(table(train$quality_binary))
 prop.table(table(valid$quality_binary))
 prop.table(table(test$quality_binary))
+```
+
+
+# ML1: Logistic Regression
+
+```{r}
+library(pROC)
 ```
 
 ## Fit Logistic Regression (Train Set)
@@ -564,4 +572,110 @@ roc_test <- roc(
 
 plot(roc_test, col = "blue", main = "ROC Curve - Logistic Regression (Test Set)")
 auc(roc_test)
+```
+
+
+# ML2: Support Vector Machine (SVM) Model (Wine Quality)
+
+```{r setup_svm, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+set.seed(123)
+```
+
+## Packages
+
+```{r packages_svm}
+# If needed, install packages once in the R console, e.g.:
+# install.packages(c("here","caret","pROC","dplyr","kernlab"))
+
+library(here)
+library(caret)
+library(pROC)
+library(dplyr)
+library(kernlab)  # required for svmRadial in caret
+```
+
+## Fit SVM (Radial) Model
+
+```{r fit-svm}
+# 3) Fit SVM (Radial) with CV tuning on TRAIN only
+# SVM is sensitive to scaling -> preProcess centers/scales predictors
+ctrl <- trainControl(
+  method = "cv",
+  number = 5,
+  classProbs = TRUE,
+  summaryFunction = twoClassSummary,
+  savePredictions = "final"
+)
+
+svm_grid <- expand.grid(
+  sigma = c(0.005, 0.01, 0.02, 0.05),
+  C     = c(0.5, 1, 2, 5, 10)
+)
+
+svm_model <- train(
+  quality_binary ~ .,
+  data = train,
+  method = "svmRadial",
+  preProcess = c("center", "scale"),
+  metric = "ROC",
+  trControl = ctrl,
+  tuneGrid = svm_grid
+)
+
+svm_model
+svm_model$bestTune
+```
+
+## Predict Probabilities
+
+```{r predict-prob}
+# 4) Predict probabilities
+valid_prob <- predict(svm_model, newdata = valid, type = "prob")[, "Premium"]
+test_prob  <- predict(svm_model, newdata = test,  type = "prob")[, "Premium"]
+```
+
+## Choose Threshold (Validation Set)
+
+```{r choose-threshold}
+# 5) Choose threshold using Validation set (Youden's J from ROC)
+roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
+best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
+best_thresh <- as.numeric(best["threshold"])
+best_thresh
+```
+
+## Class Predictions
+
+```{r class-predictions}
+# 6) Class predictions using chosen threshold
+valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
+                     levels = c("Poor","Premium"))
+test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
+                     levels = c("Poor","Premium"))
+```
+
+## Model Evaluation
+
+```{r eval-valid}
+# 7) Evaluation (Validation)
+confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
+auc_valid <- auc(roc_valid)
+auc_valid
+```
+
+```{r eval-test}
+# 8) Final Evaluation (TEST ONLY)
+roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
+auc_test <- auc(roc_test)
+auc_test
+
+confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+```
+
+## ROC Plot (Test Set)
+
+```{r roc-plot}
+# 9) Optional: ROC plot (test)
+plot(roc_test, main = "SVM (Radial) ROC (Test Set)")
 ```
