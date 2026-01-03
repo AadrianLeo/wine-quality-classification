@@ -7,9 +7,14 @@ output:
     toc: true
     toc_depth: 2
     number_sections: true
-bibliography: references.bib
-
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    toc_depth: 2
 ---
+
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -23,6 +28,10 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(corrplot)
+library(caret)
+library(pROC)
+library(DALEX)
+library(kernlab)
 ```
 
 # Introduction
@@ -191,7 +200,6 @@ head(wine_clean)
 # EDA
 ## Distribution of Wine Quality
 ```{r}
-library(ggplot2)
 ggplot(wine_clean, aes(x = quality_binary)) +
   geom_bar(fill = "orange") +
   ggtitle("Distribution of Wine Quality") +
@@ -204,10 +212,8 @@ The dataset shows a clear class imbalance, with the majority of observations bel
 
 ## Correlation Analysis of Numeric Features
 ```{r}
-library(corrplot)
 
 #Pairplot / Correlation plot
-library(corrplot)
 cor_mat <- cor(wine_clean[, numeric_cols])
 corrplot(cor_mat, method = "color", type = "upper")
 ```
@@ -541,7 +547,7 @@ wine_model$quality_factor <- NULL
 # Data Split for Modeling (Train / Validation / Test)
 
 ```{r}
-library(caret)
+
 
 set.seed(42)
 
@@ -568,7 +574,6 @@ prop.table(table(test$quality_binary))
 # ML1: Logistic Regression
 
 ```{r}
-library(pROC)
 ```
 
 ## Fit Logistic Regression (Train Set)
@@ -681,11 +686,6 @@ set.seed(123)
 # If needed, install packages once in the R console, e.g.:
 # install.packages(c("here","caret","pROC","dplyr","kernlab"))
 
-library(here)
-library(caret)
-library(pROC)
-library(dplyr)
-library(kernlab)  # required for svmRadial in caret
 ```
 
 ## Fit SVM (Radial) Model
@@ -868,10 +868,7 @@ The table compares Logistic Regression and the Radial SVM on the same held-out t
 # Model-Agnostic XAI for Logistic Regression and SVM
 
 ```{r xai-setup}
-# install.packages("DALEX")        # run once if needed
-# install.packages("ingredients")  # optional, DALEX imports it
 
-library(DALEX)
 
 # Use same training data as for the models
 x_train <- train %>% dplyr::select(-quality_binary)
