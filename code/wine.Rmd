@@ -445,3 +445,123 @@ wine_model$quality_factor <- NULL
 ```
 
 
+# ML1: Logistic Regression
+
+```{r}
+library(caret)
+library(pROC)
+```
+
+## Train / Validation / Test Split (60/20/20)
+
+```{r}
+set.seed(42)
+
+idx_train <- createDataPartition(wine_model$quality_binary, p = 0.60, list = FALSE)
+train <- wine_model[idx_train, ]
+temp  <- wine_model[-idx_train, ]
+
+idx_valid <- createDataPartition(temp$quality_binary, p = 0.50, list = FALSE)
+valid <- temp[idx_valid, ]
+test  <- temp[-idx_valid, ]
+
+prop.table(table(train$quality_binary))
+prop.table(table(valid$quality_binary))
+prop.table(table(test$quality_binary))
+```
+
+## Fit Logistic Regression (Train Set)
+
+```{r}
+logit_model <- glm(quality_binary ~ ., data = train, family = binomial)
+summary(logit_model)
+```
+
+## Odds Ratios
+
+```{r}
+odds_ratios <- exp(coef(logit_model))
+odds_ratios
+
+or_ci <- exp(cbind(OR = coef(logit_model), confint(logit_model)))
+or_ci
+```
+
+## Validation: Predict Probabilities
+
+```{r}
+valid_prob <- predict(logit_model, newdata = valid, type = "response")
+head(valid_prob)
+```
+
+## Validation: ROC & AUC
+
+```{r}
+roc_valid <- roc(
+  response = valid$quality_binary,
+  predictor = valid_prob,
+  levels = c("Poor", "Premium"),
+  direction = "<"
+)
+
+plot(roc_valid, col = "darkgreen", main = "ROC Curve - Logistic Regression (Validation Set)")
+auc(roc_valid)
+```
+
+## Validation: Choose Threshold (Youden)
+
+```{r}
+best_valid <- coords(
+  roc_valid,
+  "best",
+  ret = c("threshold", "sensitivity", "specificity"),
+  best.method = "youden"
+)
+best_valid
+```
+
+## Validation: Confusion Matrix (Default 0.5 vs Best Threshold)
+
+```{r}
+# Default threshold
+pred_valid_05 <- ifelse(valid_prob >= 0.5, "Premium", "Poor")
+pred_valid_05 <- factor(pred_valid_05, levels = c("Poor", "Premium"))
+
+cm_valid_05 <- confusionMatrix(pred_valid_05, valid$quality_binary, positive = "Premium")
+cm_valid_05
+
+# Best threshold from ROC
+best_thr <- as.numeric(best_valid["threshold"])
+
+pred_valid_best <- ifelse(valid_prob >= best_thr, "Premium", "Poor")
+pred_valid_best <- factor(pred_valid_best, levels = c("Poor", "Premium"))
+
+cm_valid_best <- confusionMatrix(pred_valid_best, valid$quality_binary, positive = "Premium")
+cm_valid_best
+```
+
+## Final Test Evaluation (Use Test Only Once)
+
+```{r}
+test_prob <- predict(logit_model, newdata = test, type = "response")
+
+test_pred <- ifelse(test_prob >= best_thr, "Premium", "Poor")
+test_pred <- factor(test_pred, levels = c("Poor", "Premium"))
+
+cm_test <- confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+cm_test
+```
+
+## Test: ROC & AUC
+
+```{r}
+roc_test <- roc(
+  response = test$quality_binary,
+  predictor = test_prob,
+  levels = c("Poor", "Premium"),
+  direction = "<"
+)
+
+plot(roc_test, col = "blue", main = "ROC Curve - Logistic Regression (Test Set)")
+auc(roc_test)
+```
