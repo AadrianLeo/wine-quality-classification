@@ -1,154 +1,179 @@
 ---
-title: "Logistic Regression Model (Wine Quality)"
-author: ""
-date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+title: "ML1 - Logistic Regression (Red Wine Quality)"
 output:
   html_document:
     toc: true
-    toc_depth: 2
     number_sections: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-set.seed(123)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
 ```
 
-# Introduction
+## Libraries
 
-This document fits a logistic regression model to the cleaned red wine quality data and evaluates its performance.
-
-# Packages
-
-```{r packages}
-# install.packages(c("here","caret","pROC","dplyr","tidyverse"))
-library(here)
-library(tidyverse) 
+```{r}
 library(caret)
 library(pROC)
-library(dplyr)
 ```
 
-# Load Data
+## Load Data
 
-```{r load-data}
-# 1) Load cleaned data
-data_path <- here("data/winequality-red-clean.csv")
-wine_model <- read.csv(data_path)
+```{r}
+df <- read.csv("../data/winequality-red-clean.csv", stringsAsFactors = FALSE)
+```
 
-# Ensure target is factor with correct positive class
-wine_model$quality_binary <- factor(wine_model$quality_binary,
-                                    levels = c("Poor", "Premium"))
+## Basic Checks
 
-# Drop quality_factor if it exists
-if ("quality_factor" %in% names(wine_model)) {
-  wine_model$quality_factor <- NULL
+```{r}
+str(df)
+head(df, 3)
+```
+
+## Target & Feature Preparation
+
+```{r}
+# Target must exist
+if (!("quality_binary" %in% names(df))) stop("'quality_binary' column not found in dataset.")
+
+# Set positive class as Premium
+df$quality_binary <- factor(df$quality_binary, levels = c("Poor", "Premium"))
+
+# Drop label-like column (potential leakage)
+if ("quality_factor" %in% names(df)) {
+  df$quality_factor <- NULL
 }
 
-# Sanity checks
-stopifnot(all(sapply(dplyr::select(wine_model, -quality_binary), is.numeric)))
-stopifnot(!anyNA(wine_model))
+# Convert predictors to numeric
+predictor_cols <- setdiff(names(df), "quality_binary")
+df[predictor_cols] <- lapply(df[predictor_cols], function(x) as.numeric(x))
 
-str(wine_model)
+# Remove any rows with NA after conversion
+df <- na.omit(df)
+
+# Class balance
+table(df$quality_binary)
+prop.table(table(df$quality_binary))
 ```
 
-# Train / Validation / Test Split
+## Train / Validation / Test Split (60/20/20)
 
-```{r split-data}
-# 2) Train/Validation/Test Split (60/20/20)
-idx_train <- createDataPartition(wine_model$quality_binary, p = 0.60, list = FALSE)
-train <- wine_model[idx_train, ]
-temp  <- wine_model[-idx_train, ]
+```{r}
+set.seed(42)
 
+# 60% train, 40% temp
+idx_train <- createDataPartition(df$quality_binary, p = 0.60, list = FALSE)
+train <- df[idx_train, ]
+temp  <- df[-idx_train, ]
+
+# split temp equally into validation and test (20/20)
 idx_valid <- createDataPartition(temp$quality_binary, p = 0.50, list = FALSE)
 valid <- temp[idx_valid, ]
 test  <- temp[-idx_valid, ]
 
-sapply(list(train = train, valid = valid, test = test), nrow)
+# Verify class proportions
+prop.table(table(train$quality_binary))
+prop.table(table(valid$quality_binary))
+prop.table(table(test$quality_binary))
 ```
 
-# Fit Logistic Regression Model
+## Fit Logistic Regression (Train Set)
 
-```{r fit-model}
-# 3) Fit Logistic Regression (GLM binomial)
-log_model <- glm(quality_binary ~ .,
-                 data = train,
-                 family = binomial)
-
-summary(log_model)
+```{r}
+logit_model <- glm(quality_binary ~ ., data = train, family = binomial)
+summary(logit_model)
 ```
 
-# Predictions and Threshold Selection
+## Odds Ratios
 
-```{r predict-and-threshold}
-# 4) Predict probabilities
-valid_prob <- predict(log_model, newdata = valid, type = "response")
-test_prob  <- predict(log_model, newdata = test,  type = "response")
+```{r}
+odds_ratios <- exp(coef(logit_model))
+odds_ratios
 
-# 5) Choose threshold using Validation set (Youden's J from ROC)
-roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
-best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
-best_thresh <- as.numeric(best["threshold"])
-best_thresh
+or_ci <- exp(cbind(OR = coef(logit_model), confint(logit_model)))
+or_ci
 ```
 
-# Classification and Evaluation
+## Validation: Predict Probabilities
 
-```{r evaluation}
-# 6) Class predictions using chosen threshold
-valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
-                     levels = c("Poor","Premium"))
-test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
-                     levels = c("Poor","Premium"))
-
-# 7) Evaluation (Validation)
-confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
-
-auc_valid <- auc(roc_valid)
-auc_valid
-
-# 8) Final Evaluation (TEST ONLY)
-roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
-auc_test <- auc(roc_test)
-auc_test
-
-confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+```{r}
+valid_prob <- predict(logit_model, newdata = valid, type = "response")
+head(valid_prob)
 ```
 
-# ROC Curve (Test Set)
+## Validation: ROC & AUC
 
-```{r roc-plot, fig.width=6, fig.height=4}
-# 9) Optional: ROC plot (test)
-plot(roc_test, main = "Logistic Regression ROC (Test Set)")
+```{r}
+roc_valid <- roc(
+  response = valid$quality_binary,
+  predictor = valid_prob,
+  levels = c("Poor", "Premium"),
+  direction = "<"
+)
+
+plot(roc_valid, col = "darkgreen", main = "ROC Curve - Logistic Regression (Validation Set)")
+auc(roc_valid)
 ```
-# 4) Predict probabilities
-valid_prob <- predict(log_model, newdata = valid, type = "response")
-test_prob  <- predict(log_model, newdata = test,  type = "response")
 
-# 5) Choose threshold using Validation set (Youden’s J from ROC)
-roc_valid <- roc(valid$quality_binary, valid_prob, levels = c("Poor","Premium"), direction = "<")
-best <- coords(roc_valid, x = "best", best.method = "youden", transpose = FALSE)
-best_thresh <- as.numeric(best["threshold"])
-best_thresh
+## Validation: Choose Threshold (Youden)
 
-# 6) Class predictions using chosen threshold
-valid_pred <- factor(ifelse(valid_prob >= best_thresh, "Premium", "Poor"),
-                     levels = c("Poor","Premium"))
-test_pred  <- factor(ifelse(test_prob  >= best_thresh, "Premium", "Poor"),
-                     levels = c("Poor","Premium"))
+```{r}
+best_valid <- coords(
+  roc_valid,
+  "best",
+  ret = c("threshold", "sensitivity", "specificity"),
+  best.method = "youden"
+)
+best_valid
+```
 
-# 7) Evaluation (Validation)
-confusionMatrix(valid_pred, valid$quality_binary, positive = "Premium")
+## Validation: Confusion Matrix (Default 0.5 vs Best Threshold)
 
-auc_valid <- auc(roc_valid)
-auc_valid
+```{r}
+# Default threshold
+pred_valid_05 <- ifelse(valid_prob >= 0.5, "Premium", "Poor")
+pred_valid_05 <- factor(pred_valid_05, levels = c("Poor", "Premium"))
 
-# 8) Final Evaluation (TEST ONLY) — this is what you report for comparison
-roc_test <- roc(test$quality_binary, test_prob, levels = c("Poor","Premium"), direction = "<")
-auc_test <- auc(roc_test)
-auc_test
+cm_valid_05 <- confusionMatrix(pred_valid_05, valid$quality_binary, positive = "Premium")
+cm_valid_05
 
-confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+# Best threshold from ROC
+best_thr <- as.numeric(best_valid["threshold"])
 
-# 9) Optional: ROC plot (test)
-plot(roc_test, main = "Logistic Regression ROC (Test Set)")
+pred_valid_best <- ifelse(valid_prob >= best_thr, "Premium", "Poor")
+pred_valid_best <- factor(pred_valid_best, levels = c("Poor", "Premium"))
+
+cm_valid_best <- confusionMatrix(pred_valid_best, valid$quality_binary, positive = "Premium")
+cm_valid_best
+```
+
+## Final Test Evaluation (Use Test Only Once)
+
+```{r}
+test_prob <- predict(logit_model, newdata = test, type = "response")
+
+# Use the chosen threshold from validation (best_thr)
+test_pred <- ifelse(test_prob >= best_thr, "Premium", "Poor")
+test_pred <- factor(test_pred, levels = c("Poor", "Premium"))
+
+cm_test <- confusionMatrix(test_pred, test$quality_binary, positive = "Premium")
+cm_test
+```
+
+## Test: ROC & AUC
+
+```{r}
+roc_test <- roc(
+  response = test$quality_binary,
+  predictor = test_prob,
+  levels = c("Poor", "Premium"),
+  direction = "<"
+)
+
+plot(roc_test, col = "blue", main = "ROC Curve - Logistic Regression (Test Set)")
+auc(roc_test)
+```
