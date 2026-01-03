@@ -1796,6 +1796,24 @@ compare_table</code></pre>
 ##   Balanced_Accuracy
 ## 1         0.7197927
 ## 2         0.7234159</code></pre>
+<p><strong>Test-set comparison (fair comparison):</strong><br />
+The table compares Logistic Regression and the Radial SVM on the same
+held-out test set using ROC-AUC and threshold-based metrics focused on
+the minority class (<em>Premium</em>). Logistic Regression achieves a
+slightly higher <strong>Test AUC</strong> (0.826) than SVM (0.807),
+indicating better overall ranking/discrimination across thresholds.
+Using the validation-selected thresholds, both models reach the same
+<strong>Recall for Premium</strong> (0.907), meaning they successfully
+identify most Premium wines. However, <strong>Precision</strong> is low
+for both models (~0.23), showing that many wines predicted as Premium
+are actually Poor, which is expected in an imbalanced setting. The SVM
+shows a marginally higher <strong>F1-score</strong> (0.373 vs 0.370) and
+<strong>Balanced Accuracy</strong> (0.723 vs 0.720), but the differences
+are very small. Overall, Logistic Regression is preferable if we
+prioritize global discrimination (AUC), while SVM offers a slight
+advantage in threshold-based classification metrics; given the minimal
+gap, model choice can be guided by the preferred objective and
+interpretability considerations.</p>
 </div>
 </div>
 
